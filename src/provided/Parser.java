@@ -39,23 +39,35 @@ public class Parser {
     */
   public AST parse() throws ParseException {
 	  Token token = in.readToken();
-	  TokenType type = token.getType();
-	  if ((type == TokenType.BOOL) || (type == TokenType.INT) || (type == TokenType.NULL)) {
+	  //TokenType type = token.getType();
+	  if ((token instanceof BOOL) || (token instanceof INT) || (token instanceof NULL)) {
 		  result = parseTerm(token);
 	  } else if (token instanceof Op){
 		  Op op = (Op) token;
 		  if (op.isUnOp()){
 			  result = parseTerm(token);
 		  }
-	  } else if (token instanceof Map){
+	  } else if (token instanceof Map) {
 		  Map map = (Map) token;
 		  result = parseExp();		  
-	  } else if (token instanceof If){
+	  } else if (token instanceof If) {
 		  If iff = (If) token;
 		  result = parseExp();	
-	  } else if (token instanceof Let){
+	  } else if (token instanceof Let) {
 		  Let let = (Let) token;
 		  result = parseExp();	
+	  } else if (token instanceof PrimFun) {
+      result = parseFactor();
+      else if (token instanceof Id) {
+      result = parseFactor(); 
+    } else if (token instanceof LeftParen) {
+      result = parseFactor();
+    } else if (token instanceof)
+
+    }
+
+    }
+	  
 	  }
 	  
 	  
