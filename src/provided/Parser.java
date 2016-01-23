@@ -125,8 +125,30 @@ public class Parser {
 			  error(token,"map");
 		  }
 	  } else if (token instanceof If) {
-		  If iff = (If) token;
-		  //TODO
+		  AST t = parseExp();
+		  if (token instanceof KeyWord){
+			  KeyWord word = (KeyWord) token;
+			  if (word.getName() == "then"){
+				  token = in.readToken();
+			  } else {
+				  error(token,"if _ then");
+			  }
+		  } else {
+			  error(token,"if _ then");
+		  }
+		  AST c = parseExp();
+		  if (token instanceof KeyWord){
+			  KeyWord word = (KeyWord) token;
+			  if (word.getName() == "else"){
+				  token = in.readToken();
+			  } else {
+				  error(token,"if _ then _ else");
+			  }
+		  } else {
+			  error(token,"if _ then _ else");
+		  }
+		  AST a = parseExp();
+		  return new If(t,c,a);
 	  } else if (token instanceof Let) {
 		  Let let = (Let) token;
 		  //TODO	
