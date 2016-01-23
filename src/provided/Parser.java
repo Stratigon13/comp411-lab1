@@ -150,8 +150,25 @@ public class Parser {
 		  AST a = parseExp();
 		  return new If(t,c,a);
 	  } else if (token instanceof Let) {
-		  Let let = (Let) token;
-		  //TODO	
+		  ArrayList<Def> defs = new ArrayList<Def>();
+		  token = in.readToken();
+		  if (token instanceof Def){
+			  while (token instanceof Def) {
+				  defs.add((Def) token);
+				  token = in.readToken();
+			  }
+			  if (token instanceof KeyWord){
+				  KeyWord word = (KeyWord) token;
+				  if (!(word.getName() == "in")) {
+					  error(token,"let _ in");
+				  }
+			  } else {
+				  error(token,"let");
+			  }
+			  return new Let((Def[])defs.toArray(),parseExp());
+		  }else {
+			  error(token,"let: no def");
+		  }
 	  } else if (token instanceof PrimFun) {
 		  result = parseFactor(token);
 	  } else if (token instanceof Variable) {
