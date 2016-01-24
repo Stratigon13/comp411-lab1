@@ -75,106 +75,126 @@ public class Parser {
     * @return  the corresponding AST.
     */
   private AST parseExp() {
+	  AST result = null;
 	  Token token = in.readToken();
-	  if (token instanceof Map) {
-		  token = in.readToken();
-		  if (token instanceof LeftBrace){
+	  TokenType type = token.getType();
+	  switch (type) {
+	  case KEYWORD:
+		  KeyWord word = (KeyWord) token;
+		  if (word.getName() == "map"){
 			  token = in.readToken();
-			  ArrayList<Variable> vars = new ArrayList<Variable>();
-			  while (true){
-				  if (token instanceof Variable){
-					  Variable var = (Variable) token;
-					  vars.add(var);
+			  if (token instanceof LeftBrace){
+				  token = in.readToken();
+				  ArrayList<Variable> vars = new ArrayList<Variable>();
+				  while (true){
+					  if (token instanceof Variable){
+						  Variable var = (Variable) token;
+						  vars.add(var);
+						  token = in.readToken();
+						  if (token instanceof Comma){
+							  token = in.readToken();
+						  } else {
+							  break;
+						  }
+					  } else {
+						  error(token,"map");
+					  }
+				  }
+				  if (token instanceof RightBrace){
 					  token = in.readToken();
-					  if (token instanceof Comma){
+				  } else {
+					  error(token,"map");
+				  }
+				  if (token instanceof KeyWord){
+					  word = (KeyWord) token;
+					  if (word.getName() == "to") {
 						  token = in.readToken();
 					  } else {
-						  break;
+						  error(token,"map");
 					  }
 				  } else {
 					  error(token,"map");
 				  }
-			  }
-			  if (token instanceof RightBrace){
-				  token = in.readToken();
-			  } else {
+				  return new Map((Variable[])vars.toArray(),parseExp());
+			  }else {
 				  error(token,"map");
 			  }
+		  } else if (word.getName() == "if"){
+			  AST t = parseExp();
 			  if (token instanceof KeyWord){
-				  KeyWord word = (KeyWord) token;
-				  if (word.getName() == "to") {
+				  word = (KeyWord) token;
+				  if (word.getName() == "then"){
 					  token = in.readToken();
 				  } else {
-					  error(token,"map");
+					  error(token,"if _ then");
 				  }
-			  } else {
-				  error(token,"map");
-			  }
-			  return new Map((Variable[])vars.toArray(),parseExp());
-		  }else {
-			  error(token,"map");
-		  }
-	  } else if (token instanceof If) {
-		  AST t = parseExp();
-		  if (token instanceof KeyWord){
-			  KeyWord word = (KeyWord) token;
-			  if (word.getName() == "then"){
-				  token = in.readToken();
 			  } else {
 				  error(token,"if _ then");
 			  }
-		  } else {
-			  error(token,"if _ then");
-		  }
-		  AST c = parseExp();
-		  if (token instanceof KeyWord){
-			  KeyWord word = (KeyWord) token;
-			  if (word.getName() == "else"){
-				  token = in.readToken();
+			  AST c = parseExp();
+			  if (token instanceof KeyWord){
+				  word = (KeyWord) token;
+				  if (word.getName() == "else"){
+					  token = in.readToken();
+				  } else {
+					  error(token,"if _ then _ else");
+				  }
 			  } else {
 				  error(token,"if _ then _ else");
 			  }
-		  } else {
-			  error(token,"if _ then _ else");
-		  }
-		  AST a = parseExp();
-		  return new If(t,c,a);
-	  } else if (token instanceof Let) {
-		  ArrayList<Def> defs = new ArrayList<Def>();
-		  token = in.readToken();
-		  if (token instanceof Def){
-			  while (token instanceof Def) {
-				  defs.add((Def) token);
-				  token = in.readToken();
-			  }
-			  if (token instanceof KeyWord){
-				  KeyWord word = (KeyWord) token;
-				  if (!(word.getName() == "in")) {
-					  error(token,"let _ in");
+			  AST a = parseExp();
+			  return new If(t,c,a);
+		  } else if (word.getName() == "let") {
+			  ArrayList<Def> defs = new ArrayList<Def>();
+			  token = in.readToken();
+			  if (token instanceof Def){
+				  while (token instanceof Def) {
+					  defs.add((Def) token);
+					  token = in.readToken();
 				  }
-			  } else {
-				  error(token,"let");
+				  if (token instanceof KeyWord){
+					  word = (KeyWord) token;
+					  if (!(word.getName() == "in")) {
+						  error(token,"let _ in");
+					  }
+				  } else {
+					  error(token,"let");
+				  }
+				  return new Let((Def[])defs.toArray(),parseExp());
+			  }else {
+				  error(token,"let: no def");
 			  }
-			  return new Let((Def[])defs.toArray(),parseExp());
-		  }else {
-			  error(token,"let: no def");
 		  }
-	  } else {
-		  AST result = null;	// exp is a term
-		  if ((token instanceof BoolConstant) || (token instanceof IntConstant) || (token instanceof NullConstant)) {
-			  result =  parseTerm(token);
-		  } else if (token instanceof Op){
-			  Op op = (Op) token;
-			  if (op.isUnOp()){
-				  AST term = parseTerm(token);
-				  result = new UnOpApp(op,term);
-			  } else {
-				  error(token,"unknown op");
-			  }
-		  } else if ((token instanceof PrimFun) || (token instanceof Variable) || (token instanceof LeftParen)){
-			  result = parseTerm(token);
+	  case BOOL:
+		  result =  parseTerm(token);
+		  return result;
+	  case INT:
+		  result =  parseTerm(token);
+		  return result;
+	  case NULL:
+		  result =  parseTerm(token);
+		  return result;
+	  case OPERATOR:
+		  Op op = (Op) token;
+		  if (op.isUnOp()){
+			  AST term = parseTerm(token);
+			  result = new UnOpApp(op,term);
+			  return result;
+		  } else {
+			  error(token,"unknown op");
 		  }
-		  Token next = in.peek();
+	  case PRIM_FUN:
+		  result = parseTerm(token);
+		  return result;
+	  case VAR:
+		  result = parseTerm(token);
+		  return result;
+	  case LEFT_PAREN:
+		  result = parseTerm(token);
+		  return result;
+	  default:
+		  throw new 
+	        ParseException("parseExp:`" +  type + "' is not a legal token");
 	  }
   }
   

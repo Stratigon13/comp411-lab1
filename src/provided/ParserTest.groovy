@@ -31,8 +31,14 @@ public class ParserTest extends TestCase{
     public void testParseExp() throws Exception {
         Parser parser = new Parser("src/provided/tests/in");
         AST ast = parser.parse();
-        assertEquals(ast.class, KeyWord);
+        assertEquals(ast.toString(), "let");
+    }
 
+    @Test
+    public void testParseIDList() throws Exception {
+        Parser parser = new Parser("src/provided/tests/in");
+        AST ast = parser.parse();
+        assertEquals(ast.class, KeyWord);
     }
 
 }
