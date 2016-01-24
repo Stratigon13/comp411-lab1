@@ -7,7 +7,6 @@ import provided.ParseException;
 import provided.Lexer;
 
 import java.io.*;
-import java.util.Arrays;
 import java.util.ArrayList;
 
 /** Each parser object in this class contains an embedded lexer which contains an embedded input stream.  The
@@ -77,16 +76,7 @@ public class Parser {
     */
   private AST parseExp() {
 	  Token token = in.readToken();
-	  //TokenType type = token.getType();
-	  AST result = null;
-	  if ((token instanceof BoolConstant) || (token instanceof IntConstant) || (token instanceof NullConstant)) {
-		  result = parseTerm(token);
-	  } else if (token instanceof Op){
-		  Op op = (Op) token;
-		  if (op.isUnOp()){
-			  result = parseTerm(token);
-		  }
-	  } else if (token instanceof Map) {
+	  if (token instanceof Map) {
 		  token = in.readToken();
 		  if (token instanceof LeftBrace){
 			  token = in.readToken();
@@ -112,7 +102,7 @@ public class Parser {
 			  }
 			  if (token instanceof KeyWord){
 				  KeyWord word = (KeyWord) token;
-				  if (word.getName() == "to"){
+				  if (word.getName() == "to") {
 					  token = in.readToken();
 				  } else {
 					  error(token,"map");
@@ -169,24 +159,36 @@ public class Parser {
 		  }else {
 			  error(token,"let: no def");
 		  }
-	  } else if (token instanceof PrimFun) {
-		  result = parseFactor(token);
-	  } else if (token instanceof Variable) {
-	      result = parseFactor(token); 
-	  } else if (token instanceof LeftParen) {
-	      result = parseFactor(token);
+	  } else {
+		  AST result = null;	// exp is a term
+		  if ((token instanceof BoolConstant) || (token instanceof IntConstant) || (token instanceof NullConstant)) {
+			  result =  parseTerm(token);
+		  } else if (token instanceof Op){
+			  Op op = (Op) token;
+			  if (op.isUnOp()){
+				  AST term = parseTerm(token);
+				  result = new UnOpApp(op,term);
+			  } else {
+				  error(token,"unknown op");
+			  }
+		  } else if ((token instanceof PrimFun) || (token instanceof Variable) || (token instanceof LeftParen)){
+			  result = parseTerm(token);
+		  }
+		  Token next = in.peek();
 	  }
-	  return result;
   }
   
   private AST parseFactor(Token token) {
+	  AST exp = null;
 	  if (token instanceof LeftParen){
-		  AST exp = parseExp();
+		  exp = parseExp();
 		  token = in.readToken();
 		  if (token instanceof RightParen){
 			  return exp;
 		  } else{
 			  error(token,"factor paren");
+			  exp = null;
+			  return exp;
 		  }
 	  } else if (token instanceof PrimFun) {
 		  return (PrimFun) token;
@@ -194,11 +196,12 @@ public class Parser {
 		  return (Variable) token;
 	  } else{
 		  error(token,"unknown factor");
+		  return exp;
 	  }
-	  return (AST) in.peek();
-	  }
+  }
   
   private AST[] parseArgs() {
+	  
 	  AST[] out = new AST[10];
 	  out[0] = (AST) in.peek();
 	  return out;
