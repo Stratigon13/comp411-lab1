@@ -114,10 +114,11 @@ public class Parser {
 
 		  } else if (word.getName().equals("if")){
 			  AST t = parseExp();
-			  if (token instanceof KeyWord){
-				  word = (KeyWord) token;
+			  Token next = in.peek();
+			  if (next instanceof KeyWord){
+				  word = (KeyWord) next;
 				  if (word.getName().equals("then")){
-					  token = in.readToken();
+					  in.readToken();
 				  } else {
 					  error(token,"if _ then");
 				  }
@@ -125,8 +126,9 @@ public class Parser {
 				  error(token,"if _ then");
 			  }
 			  AST c = parseExp();
-			  if (token instanceof KeyWord){
-				  word = (KeyWord) token;
+			  next = in.peek();
+			  if (next instanceof KeyWord){
+				  word = (KeyWord) next;
 				  if (word.getName().equals("else")){
 					  token = in.readToken();
 				  } else {
