@@ -1,7 +1,9 @@
-package provided
+package provided;
 
-import junit.framework.TestCase
-import org.junit.Test
+import com.apple.laf.AquaButtonBorder;
+import junit.framework.TestCase;
+import org.junit.Test;
+import java.io.StringReader;
 
 
 /**
@@ -129,6 +131,7 @@ public class ParserTest extends TestCase{
         }
     }
 
+
     @Test
     public void testParseExpIf() throws Exception {
         try {
@@ -138,18 +141,6 @@ public class ParserTest extends TestCase{
 
         } catch (Exception e) {
             fail("if threw " + e);
-        }
-    }
-
-    @Test
-    public void testParseIdList() throws Exception {
-        try {
-            String output = "a, b, c";
-            String input = "a, b, c";
-            checkString("id", output, input );
-
-        } catch (Exception e) {
-            fail("id threw " + e);
         }
     }
 
