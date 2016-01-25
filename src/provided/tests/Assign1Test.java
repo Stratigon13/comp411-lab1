@@ -14,6 +14,8 @@ public class Assign1Test extends TestCase {
   protected void checkString(String name, String answer, String program) {
     Parser p = new Parser(new StringReader(program));
     String actual = p.parse().toString();
+    System.out.println("");
+    System.out.println("** " + name + " **");
 	System.out.println("Expected: " + answer);
 	System.out.println("Actual: " + actual);
     try{

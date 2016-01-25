@@ -79,11 +79,10 @@ public class Parser {
 	  Token token = in.readToken();
 	  TokenType type = token.getType();
 	  switch (type) {
-	  case KEYWORD:		// map or if or let
+	  case KEYWORD:		// map | if | let
 		  KeyWord word = (KeyWord) token;
 		  if (word.getName() == "map"){
 			  token = in.readToken();
-
 			  ArrayList<Variable> vars = new ArrayList<Variable>();
 			  while (true){
 				  if (token instanceof Variable){
@@ -101,21 +100,26 @@ public class Parser {
 			  }
 			  if (token instanceof KeyWord){
 				  word = (KeyWord) token;
-				  if (word.getName() == "to") {
-					  token = in.readToken();
-				  } else {
+				  if (!(word.getName().equals("to"))) {
 					  error(token,"map");
 				  }
 			  } else {
 				  error(token,"map");
 			  }
-			  return new Map((Variable[])vars.toArray(),parseExp());
+			  Variable[] arr = new Variable[vars.size()];
+			  vars.toArray(arr);
+			  //System.out.println("VARS: "+vars.toString());
+			  Token next = in.peek();
+			  //System.out.println(next.toString()+" : "+next.getType().toString());
+			  AST exp = parseExp();
+			  //System.out.println("EXP: "+exp.toString());
+			  return new Map(arr,exp);
 
-		  } else if (word.getName() == "if"){
+		  } else if (word.getName().equals("if")){
 			  AST t = parseExp();
 			  if (token instanceof KeyWord){
 				  word = (KeyWord) token;
-				  if (word.getName() == "then"){
+				  if (word.getName().equals("then")){
 					  token = in.readToken();
 				  } else {
 					  error(token,"if _ then");
@@ -126,7 +130,7 @@ public class Parser {
 			  AST c = parseExp();
 			  if (token instanceof KeyWord){
 				  word = (KeyWord) token;
-				  if (word.getName() == "else"){
+				  if (word.getName().equals("else")){
 					  token = in.readToken();
 				  } else {
 					  error(token,"if _ then _ else");
@@ -169,7 +173,7 @@ public class Parser {
 				  } else {
 					  error(token,"let _");
 				  }
-				  Def[] arr = new Def[1];
+				  Def[] arr = new Def[defs.size()];
 				  defs.toArray(arr);
 				  return new Let(arr,parseExp());
 			  }else {
@@ -202,10 +206,10 @@ public class Parser {
   
   private AST parseFactor(Token token) {
 	  AST exp = null;
-	  if (token instanceof LeftParen){
+	  if (token == LeftParen.ONLY){
 		  exp = parseExp();
 		  token = in.readToken();
-		  if (token instanceof RightParen){
+		  if (token == RightParen.ONLY){
 			  return exp;
 		  } else{
 			  error(token,"factor paren");
@@ -233,7 +237,9 @@ public class Parser {
 		  }
 		  token = in.readToken();
 	  }
-	  return (AST[])args.toArray();
+	  AST[] arr = new AST[args.size()]; 
+	  args.toArray(arr);
+	  return arr;
   }
   
   private void error(Token token, String message){
