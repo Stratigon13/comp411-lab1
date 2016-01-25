@@ -25,7 +25,7 @@ public class ParserTest extends TestCase{
         try {
             String output = "function?";
             String input = "function?";
-            checkString("prim  ", output, input );
+            checkString("prim  ", output, input);
 
         } catch (Exception e) {
             fail("prim   threw " + e);
@@ -145,10 +145,38 @@ public class ParserTest extends TestCase{
     }
 
     @Test
+    public void testParseTerm_Factor_ExpList2() throws Exception {
+        try {
+            String output = "a((b), c)";
+            String input = "(a)((b), c)";
+            checkString("Factor  ", output, input );
+
+        } catch (Exception e) {
+            fail("Factor   threw " + e);
+        }
+    }
+
+    @Test
     public void testParseException1() {
         try {
             String output = "doh!";
             String input = "null + 3 -";
+            checkString("parseException", output, input );
+
+            fail("parseException did not throw ParseException exception");
+            //} catch (ParseException e) {
+            //e.printStackTrace();
+
+        } catch (Exception e) {
+            fail("parseException threw " + e);
+        }
+    } //end of func
+
+    @Test
+    public void testParseException2() {
+        try {
+            String output = "doh!";
+            String input = "map a, to 3";
             checkString("parseException", output, input );
 
             fail("parseException did not throw ParseException exception");
