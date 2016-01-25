@@ -79,46 +79,38 @@ public class Parser {
 	  Token token = in.readToken();
 	  TokenType type = token.getType();
 	  switch (type) {
-	  case KEYWORD:
+	  case KEYWORD:		// map or if or let
 		  KeyWord word = (KeyWord) token;
 		  if (word.getName() == "map"){
 			  token = in.readToken();
-			  if (token instanceof LeftBrace){
-				  token = in.readToken();
-				  ArrayList<Variable> vars = new ArrayList<Variable>();
-				  while (true){
-					  if (token instanceof Variable){
-						  Variable var = (Variable) token;
-						  vars.add(var);
+
+			  ArrayList<Variable> vars = new ArrayList<Variable>();
+			  while (true){
+				  if (token instanceof Variable){
+					  Variable var = (Variable) token;
+					  vars.add(var);
+					  token = in.readToken();
+					  if (token instanceof Comma){
 						  token = in.readToken();
-						  if (token instanceof Comma){
-							  token = in.readToken();
-						  } else {
-							  break;
-						  }
 					  } else {
-						  error(token,"map");
+						  break;
 					  }
+				  } else {
+					  break;
 				  }
-				  if (token instanceof RightBrace){
+			  }
+			  if (token instanceof KeyWord){
+				  word = (KeyWord) token;
+				  if (word.getName() == "to") {
 					  token = in.readToken();
 				  } else {
 					  error(token,"map");
 				  }
-				  if (token instanceof KeyWord){
-					  word = (KeyWord) token;
-					  if (word.getName() == "to") {
-						  token = in.readToken();
-					  } else {
-						  error(token,"map");
-					  }
-				  } else {
-					  error(token,"map");
-				  }
-				  return new Map((Variable[])vars.toArray(),parseExp());
-			  }else {
+			  } else {
 				  error(token,"map");
 			  }
+			  return new Map((Variable[])vars.toArray(),parseExp());
+
 		  } else if (word.getName() == "if"){
 			  AST t = parseExp();
 			  if (token instanceof KeyWord){
@@ -165,32 +157,23 @@ public class Parser {
 				  error(token,"let: no def");
 			  }
 		  }
-	  case BOOL:
-		  result =  parseTerm(token);
-		  return result;
-	  case INT:
-		  result =  parseTerm(token);
-		  return result;
-	  case NULL:
-		  result =  parseTerm(token);
-		  return result;
-	  case OPERATOR:
-		  Op op = (Op) token;
-		  if (op.isUnOp()){
-			  AST term = parseTerm(token);
-			  result = new UnOpApp(op,term);
-			  return result;
+	  case BOOL: case INT: case LEFT_PAREN:
+	  case NULL: case OPERATOR: case PRIM_FUN:
+	  case VAR: 			// term { binop exp }
+		  AST term = parseTerm(token);
+		  Token next = in.peek();
+		  if (next instanceof Op){
+			  token = in.readToken();
+			  Op op = (Op) token;
+			  if (op.isBinOp()){
+				  AST exp = parseExp();
+				  result = new BinOpApp(op,term,exp);
+			  } else {
+				  error(token,"term _");
+			  }
 		  } else {
-			  error(token,"unknown op");
+			  result = term;
 		  }
-	  case PRIM_FUN:
-		  result = parseTerm(token);
-		  return result;
-	  case VAR:
-		  result = parseTerm(token);
-		  return result;
-	  case LEFT_PAREN:
-		  result = parseTerm(token);
 		  return result;
 	  default:
 		  throw new 
@@ -221,10 +204,17 @@ public class Parser {
   }
   
   private AST[] parseArgs() {
-	  
-	  AST[] out = new AST[10];
-	  out[0] = (AST) in.peek();
-	  return out;
+	  ArrayList<AST> args = new ArrayList<AST>();
+	  Token token = in.readToken();
+	  while (token != RightParen.ONLY) {
+		  args.add(parseExp());
+		  Token next = in.peek();
+		  if (next instanceof Comma){
+			  token = in.readToken();
+		  }
+		  token = in.readToken();
+	  }
+	  return (AST[])args.toArray();
   }
   
   private void error(Token token, String message){
