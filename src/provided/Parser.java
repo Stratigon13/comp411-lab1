@@ -139,20 +139,39 @@ public class Parser {
 		  } else if (word.getName() == "let") {
 			  ArrayList<Def> defs = new ArrayList<Def>();
 			  token = in.readToken();
-			  if (token instanceof Def){
-				  while (token instanceof Def) {
-					  defs.add((Def) token);
+			  if (token instanceof Variable){
+				  while (token instanceof Variable) {
+					  Variable id = (Variable) token;
 					  token = in.readToken();
+					  if (token instanceof KeyWord) {
+						  word =  (KeyWord) token;
+						  if (word.getName().equals(":=")){
+							  Def def = new Def(id,parseExp());
+							  defs.add(def);
+							  token = in.readToken();
+							  if (token instanceof SemiColon){
+								  token = in.readToken();
+							  } else {
+								  error(token,"let expected ;");
+							  }
+						  } else {
+							  error(token,"let expected := op");
+						  }
+					  } else {
+						  
+					  }
 				  }
 				  if (token instanceof KeyWord){
 					  word = (KeyWord) token;
-					  if (!(word.getName() == "in")) {
+					  if (!(word.getName().equals("in"))) {
 						  error(token,"let _ in");
 					  }
 				  } else {
-					  error(token,"let");
+					  error(token,"let _");
 				  }
-				  return new Let((Def[])defs.toArray(),parseExp());
+				  Def[] arr = new Def[1];
+				  defs.toArray(arr);
+				  return new Let(arr,parseExp());
 			  }else {
 				  error(token,"let: no def");
 			  }
