@@ -93,7 +93,17 @@ public class ParserTest extends TestCase{
     }
 
 
+    @Test
+    public void testParseTerm_Factor_ExpList() throws Exception {
+        try {
+            String output = "(a + a), (b + b), (c + c)";
+            String input = "(a + a), (b + b), (c + c)";
+            checkString("Factor  ", output, input );
 
+        } catch (Exception e) {
+            fail("Factor   threw " + e);
+        }
+    }
 
     @Test
     public void testParseExpLet() throws Exception {
@@ -134,10 +144,10 @@ public class ParserTest extends TestCase{
     }
 
     @Test
-    public void testParseException() {
+    public void testParseException1() {
         try {
             String output = "doh!";
-            String input = "map a, to 3";
+            String input = "null + 3 -";
             checkString("parseException", output, input );
 
             fail("parseException did not throw ParseException exception");
