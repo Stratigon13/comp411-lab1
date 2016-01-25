@@ -57,6 +57,45 @@ public class ParserTest extends TestCase{
     }
 
     @Test
+    public void testParseTermInt() throws Exception {
+        try {
+            String output = "3";
+            String input = "3";
+            checkString("Int  ", output, input );
+
+        } catch (Exception e) {
+            fail("Int   threw " + e);
+        }
+    }
+
+    @Test
+    public void testParseTermBool() throws Exception {
+        try {
+            String output = "false";
+            String input = "false";
+            checkString("Bool  ", output, input );
+
+        } catch (Exception e) {
+            fail("Bool   threw " + e);
+        }
+    }
+
+    @Test
+    public void testParseTermUnop() throws Exception {
+        try {
+            String output = "- 3";
+            String input = "- 3";
+            checkString("Unop  ", output, input );
+
+        } catch (Exception e) {
+            fail("Unop   threw " + e);
+        }
+    }
+
+
+
+
+    @Test
     public void testParseExpLet() throws Exception {
         try {
             String output = "let a := 3; in (a + a)";
@@ -80,6 +119,7 @@ public class ParserTest extends TestCase{
             fail("map threw " + e);
         }
     }
+
 
     @Test
     public void testParseExpIf() throws Exception {
