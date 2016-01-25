@@ -211,7 +211,7 @@ public class Parser {
 		  token = in.readToken();
 		  if (token == RightParen.ONLY){
 			  return exp;
-		  } else{
+		  } else {
 			  error(token,"factor paren");
 			  exp = null;
 			  return exp;

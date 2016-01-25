@@ -124,7 +124,7 @@ public class ParserTest extends TestCase{
         try {
             String output = "map f to (map x to f(x(x)))(map x to f(x(x)))";
             String input = "map f to (map x to f( x( x ) ) ) (map x to f(x(x)))";
-            checkString("map", output, input );
+            checkString("map", output, input);
 
         } catch (Exception e) {
             fail("map threw " + e);
