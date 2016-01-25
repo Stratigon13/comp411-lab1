@@ -12,14 +12,19 @@ import org.junit.Test;
  */
 public class ParserTest extends TestCase{
 
-    protected void checkString(String name, String answer, String program) {
-        Parser p = new Parser(new StringReader(program));
-        try{
-            assertEquals(name, answer, p.parse().toString());
-        } catch (ParseException e){
-            System.err.println(e);
-        }
-    }
+	protected void checkString(String name, String answer, String program) {
+	    Parser p = new Parser(new StringReader(program));
+	    String actual = p.parse().toString();
+	    System.out.println("");
+	    System.out.println("** " + name + " **");
+		System.out.println("Expected: " + answer);
+		System.out.println("Actual: " + actual);
+	    try{
+	    	assertEquals(name, answer, actual);
+	    } catch (ParseException e){
+	    	System.err.println(e);
+	    }finally{System.out.flush();}
+	  }
 
     @Test
     public void testParseFactorPrim() throws Exception {
