@@ -140,8 +140,8 @@ public class ParserTest extends TestCase{
     @Test
     public void testParseExpIf() throws Exception {
         try {
-            String output = "if a = 3; then b = 2; else c = 3";
-            String input = "if a = 3; then b = 2; else c = 3";
+            String output = "if (a = 3) then (b = 2) else (c = 3)";
+            String input = "if a = 3 then b = 2 else c = 3";
             checkString("if", output, input );
 
         } catch (Exception e) {
