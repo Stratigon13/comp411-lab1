@@ -56,8 +56,10 @@ public class Parser {
       
       if (token instanceof Constant) return (Constant) token;
       AST factor = parseFactor(token);
+      //System.out.println("FAC: "+factor.toString());
       Token next = in.peek();
       if (next == LeftParen.ONLY) {
+    	//System.out.println(token.toString()+"(");
         in.readToken();  // remove next from input stream
         AST[] exps = parseArgs();  // including closing paren
         return new App(factor,exps);
@@ -108,12 +110,7 @@ public class Parser {
 			  }
 			  Variable[] arr = new Variable[vars.size()];
 			  vars.toArray(arr);
-			  //System.out.println("VARS: "+vars.toString());
-			  Token next = in.peek();
-			  //System.out.println(next.toString()+" : "+next.getType().toString());
-			  AST exp = parseExp();
-			  //System.out.println("EXP: "+exp.toString());
-			  return new Map(arr,exp);
+			  return new Map(arr,parseExp());
 
 		  } else if (word.getName().equals("if")){
 			  AST t = parseExp();
@@ -210,6 +207,7 @@ public class Parser {
 		  exp = parseExp();
 		  token = in.readToken();
 		  if (token == RightParen.ONLY){
+			  //System.out.println("in fac: "+in.peek().toString());
 			  return exp;
 		  } else {
 			  error(token,"factor paren");
@@ -228,17 +226,19 @@ public class Parser {
   
   private AST[] parseArgs() {
 	  ArrayList<AST> args = new ArrayList<AST>();
-	  Token token = in.readToken();
-	  while (token != RightParen.ONLY) {
+	  Token next = in.peek();
+	  while (next != RightParen.ONLY) {
 		  args.add(parseExp());
-		  Token next = in.peek();
+		  next = in.peek();
 		  if (next instanceof Comma){
-			  token = in.readToken();
+			  in.readToken();
 		  }
-		  token = in.readToken();
+		  next = in.peek();
 	  }
+	  in.readToken();
 	  AST[] arr = new AST[args.size()]; 
 	  args.toArray(arr);
+	  //System.out.println("ARGS: "+args.toString());
 	  return arr;
   }
   
