@@ -1,8 +1,10 @@
-package provided
+package provided;
 
-import com.apple.laf.AquaButtonBorder
-import junit.framework.TestCase
-import org.junit.Test
+import junit.framework.TestCase;
+
+import java.io.StringReader;
+
+import org.junit.Test;
 
 
 /**
