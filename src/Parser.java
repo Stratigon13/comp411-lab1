@@ -30,11 +30,18 @@ public class Parser {
     * @throws ParseException if a syntax error is encountered (including lexical errors). 
     */
   public AST parse() throws ParseException {
+	  AST result = null;
 	  try {
-		  return parseExp();
+		  result = parseExp();
 	  } catch (Exception e) {
 		  throw new ParseException("");
 	  }
+	  try {
+		  in.readToken();
+	  } catch (NullPointerException e) {
+		  throw new ParseException("expected end of file");
+	  }
+	  return result;
 
   }
   
@@ -147,7 +154,7 @@ public class Parser {
 			  }
 			  AST a = parseExp();
 			  return new If(t,c,a);
-		  } else if (word.getName() == "let") {
+		  } else if (word.getName().equals("let")) {
 			  ArrayList<Def> defs = new ArrayList<Def>();
 			  token = in.readToken();
 			  if (token instanceof Variable){
@@ -197,6 +204,9 @@ public class Parser {
 			  Op op = (Op) token;
 			  if (op.isBinOp()){
 				  AST exp = parseExp();
+				  System.out.println("OP: "+op.toString());
+				  System.out.println("TERM: "+term.toString());
+				  System.out.println("EXP: "+exp.toString());
 				  result = new BinOpApp(op,term,exp);
 			  } else {
 				  error(token,"term _");
