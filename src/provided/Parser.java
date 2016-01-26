@@ -76,29 +76,39 @@ public class Parser {
     * 
     * @return  the corresponding AST.
     */
-  private AST parseExp() {
+  private AST parseExp(){
 	  AST result = null;
 	  Token token = in.readToken();
 	  TokenType type = token.getType();
 	  switch (type) {
 	  case KEYWORD:		// map | if | let
 		  KeyWord word = (KeyWord) token;
-		  if (word.getName() == "map"){
+		  if (word.getName().equals("map")){
 			  token = in.readToken();
 			  ArrayList<Variable> vars = new ArrayList<Variable>();
-			  while (true){
-				  if (token instanceof Variable){
-					  Variable var = (Variable) token;
-					  vars.add(var);
-					  token = in.readToken();
+			  
+			  
+			  if (token instanceof Variable){
+				  Variable var = (Variable) token;
+				  vars.add(var);
+				  token = in.readToken();
+				  while (true){
 					  if (token instanceof Comma){
 						  token = in.readToken();
 					  } else {
+						  error(token,"map expected ,");
+					  }
+					  System.out.println(token.toString());
+					  if (token instanceof Variable){
+						  vars.add((Variable) token);
+						  token = in.readToken();
+					  } else {
+						  error(token,"map expected var");
+					  }
+					  if (token instanceof KeyWord){
 						  break;
 					  }
-				  } else {
-					  break;
-				  }
+				  }	  			  			  
 			  }
 			  if (token instanceof KeyWord){
 				  word = (KeyWord) token;
@@ -244,8 +254,9 @@ public class Parser {
 	  return arr;
   }
   
-  private void error(Token token, String message){
+  private void error(Token token, String message) throws ParseException{
 	  System.err.println(token.toString() + " caused an error: " + message);
+	  throw new ParseException("message");
   }
 
 
