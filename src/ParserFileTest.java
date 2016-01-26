@@ -1,4 +1,3 @@
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import junit.framework.TestCase;
 import org.junit.Test;
 
@@ -6,7 +5,6 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.Set;
 
-//import static org.junit.Assert.*;
 
 /**
  * Created by xiaozheng on 1/25/16.
@@ -61,10 +59,10 @@ public class ParserFileTest extends TestCase {
         try {
             String output = "(f(x) + (x * 12))";
             String input = "f(x) + (x * 12))";
-            checkString("prim  ", output, input);
+            checkString("add  ", output, input);
 
         } catch (Exception e) {
-            fail("prim   threw " + e);
+            fail("add   threw " + e);
         }
 
     }
@@ -186,10 +184,12 @@ public class ParserFileTest extends TestCase {
                 checkFile(programFilename);
             }
 
-            System.out.println(Filename);
+            //System.err.println(Filename);
 
         } catch (Exception e) {
+            System.err.println(Filename);
             fail(Filename + " threw " + e);
+            //System.err.println(Filename);
         }
     }
 

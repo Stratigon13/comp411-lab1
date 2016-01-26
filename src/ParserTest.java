@@ -148,6 +148,17 @@ public class ParserTest extends TestCase{
         }
     }
 
+    @Test
+    public void testParseWeird() throws Exception {
+        try {
+            String output = "(1 + (2 * 3))";
+            String input = "1 + 2 * 3";
+            checkString("add", output, input);
+
+        } catch (Exception e) {
+            fail("add threw " + e);
+        }
+    }
 
     @Test
     public void testParseExpIf() throws Exception {
