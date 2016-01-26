@@ -101,8 +101,8 @@ public class ParserTest extends TestCase{
     @Test
     public void testParseTerm_Factor_ExpList() throws Exception {
         try {
-            String output = "(a + a), (b + b), (c + c)";
-            String input = "(a + a), (b + b), (c + c)";
+            String output = "((a + a))((b + b), (c + c))";
+            String input = "(a + a)((b + b), (c + c))";
             checkString("Factor  ", output, input );
 
         } catch (Exception e) {
@@ -124,10 +124,22 @@ public class ParserTest extends TestCase{
 
 
     @Test
-    public void testParseExpMap() throws Exception {
+         public void testParseExpMap() throws Exception {
         try {
             String output = "map f to (map x to f(x(x)))(map x to f(x(x)))";
             String input = "map f to (map x to f( x( x ) ) ) (map x to f(x(x)))";
+            checkString("map", output, input);
+
+        } catch (Exception e) {
+            fail("map threw " + e);
+        }
+    }
+
+    @Test
+    public void testParseExpMap_Space() throws Exception {
+        try {
+            String output = "map  to 2";
+            String input = "map to 2";
             checkString("map", output, input);
 
         } catch (Exception e) {
@@ -149,9 +161,21 @@ public class ParserTest extends TestCase{
     }
 
     @Test
+    public void testParseExpIfBroken() throws Exception {
+        try {
+            String output = "if ((a = 3))(x) then null else ((c = 3))(z)";
+            String input = "if (a = 3)(x) then null else (c = 3)(z)";
+            checkString("if", output, input );
+
+        } catch (Exception e) {
+            fail("if threw " + e);
+        }
+    }
+
+    @Test
     public void testParseTerm_Factor_ExpList2() throws Exception {
         try {
-            String output = "a((b), c)";
+            String output = "a(b, c)";
             String input = "(a)((b), c)";
             checkString("Factor  ", output, input );
 
@@ -184,8 +208,6 @@ public class ParserTest extends TestCase{
             checkString("parseException", output, input );
 
             fail("parseException did not throw ParseException exception");
-            //} catch (ParseException e) {
-            //e.printStackTrace();
 
         } catch (Exception e) {
             fail("parseException threw " + e);
