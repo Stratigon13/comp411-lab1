@@ -1,4 +1,4 @@
-package provided;
+
 
 /** Parsing error class */
 public class ParseException extends RuntimeException {

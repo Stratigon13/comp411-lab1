@@ -1,4 +1,4 @@
-package provided;
+
 
 
 /** Jam general AST type */

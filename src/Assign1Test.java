@@ -1,7 +1,5 @@
-package provided.tests;
 
-import provided.ParseException;
-import provided.Parser;
+
 import junit.framework.*;
 import java.io.*;
 

@@ -1,10 +1,4 @@
-package provided;
 
-/** Parser for Assignment 2 */
-
-
-import provided.ParseException;
-import provided.Lexer;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -17,7 +11,6 @@ public class Parser {
   
   private Lexer in;
 
-  //TODO
   
   public Parser(Lexer i) {
     in = i;
@@ -98,7 +91,7 @@ public class Parser {
 					  } else {
 						  break;
 					  }
-					  System.out.println(token.toString());
+					  //System.out.println(token.toString());
 					  if (token instanceof Variable){
 						  vars.add((Variable) token);
 						  token = in.readToken();
