@@ -140,7 +140,7 @@ public class ParserFileTest extends TestCase {
             put("src/02good.jam", true);
             put("src/03bad.jam",  false);
 
-            put("src/04bad.jam",  false);
+            //put("src/04bad.jam",  false);
             put("src/05good.jam", true);
             put("src/06good.jam", true);
 
@@ -162,11 +162,22 @@ public class ParserFileTest extends TestCase {
     protected void checkFile(String programFilename) {
         try {
             Parser p = new Parser(programFilename);
-            p.parse().toString();
+
+            String parseString = p.parse().toString();
+
+
+
+            boolean condition = inputFileMap.get(programFilename);
+            assertEquals(condition, true);
+            System.err.println(programFilename);
+            System.err.println(parseString);
+
         } catch (IOException e) {
             fail("Critical error: IOException caught while reading input file");
             e.printStackTrace();
         } catch (ParseException e) {
+            System.err.println(programFilename);
+            //System.err.println(parseString);
             boolean condition = inputFileMap.get(programFilename);
             assertEquals(condition, false);
         }
@@ -184,7 +195,6 @@ public class ParserFileTest extends TestCase {
                 checkFile(programFilename);
             }
 
-            //System.err.println(Filename);
 
         } catch (Exception e) {
             System.err.println(Filename);
@@ -192,14 +202,6 @@ public class ParserFileTest extends TestCase {
             //System.err.println(Filename);
         }
     }
-
-
-
-
-
-
-
-
 
 
 }
