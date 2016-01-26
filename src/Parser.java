@@ -30,7 +30,12 @@ public class Parser {
     * @throws ParseException if a syntax error is encountered (including lexical errors). 
     */
   public AST parse() throws ParseException {
+	  try {
 		  return parseExp();
+	  } catch (Exception e) {
+		  throw new ParseException("");
+	  }
+
   }
   
 

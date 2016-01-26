@@ -190,14 +190,12 @@ public class ParserTest extends TestCase{
         try {
             String output = "doh!";
             String input = "null + 3 -";
-            checkString("parseException", output, input );
+            checkString("ParseException:", output, input );
 
             fail("parseException did not throw ParseException exception");
-            //} catch (ParseException e) {
-            //e.printStackTrace();
 
         } catch (Exception e) {
-            fail("parseException threw " + e);
+            System.out.println("Caught the exception");
         }
     } //end of func
 
@@ -206,12 +204,12 @@ public class ParserTest extends TestCase{
         try {
             String output = "doh!";
             String input = "map a, to 3";
-            checkString("parseException", output, input );
+            checkString("ParseException", output, input );
 
             fail("parseException did not throw ParseException exception");
 
         } catch (Exception e) {
-            fail("parseException threw " + e);
+            System.out.println("Caught the exception");
         }
     } //end of func
 
