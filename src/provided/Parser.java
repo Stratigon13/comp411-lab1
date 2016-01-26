@@ -96,7 +96,7 @@ public class Parser {
 					  if (token instanceof Comma){
 						  token = in.readToken();
 					  } else {
-						  error(token,"map expected ,");
+						  break;
 					  }
 					  System.out.println(token.toString());
 					  if (token instanceof Variable){
@@ -256,7 +256,7 @@ public class Parser {
   
   private void error(Token token, String message) throws ParseException{
 	  System.err.println(token.toString() + " caused an error: " + message);
-	  throw new ParseException("message");
+	  throw new ParseException(message);
   }
   
 
