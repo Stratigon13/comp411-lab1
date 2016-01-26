@@ -36,9 +36,7 @@ public class Parser {
 	  } catch (Exception e) {
 		  throw new ParseException("");
 	  }
-	  if (!(in.readToken().equals(null))){
-		  throw new ParseException("expected end of file");
-	  }
+	  Token token = in.readToken();
 	  return result;
 
   }
