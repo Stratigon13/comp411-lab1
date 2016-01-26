@@ -36,9 +36,7 @@ public class Parser {
 	  } catch (Exception e) {
 		  throw new ParseException("");
 	  }
-	  try {
-		  in.readToken();
-	  } catch (NullPointerException e) {
+	  if (!(in.readToken().equals(null))){
 		  throw new ParseException("expected end of file");
 	  }
 	  return result;
@@ -204,9 +202,9 @@ public class Parser {
 			  Op op = (Op) token;
 			  if (op.isBinOp()){
 				  AST exp = parseExp();
-				  System.out.println("OP: "+op.toString());
-				  System.out.println("TERM: "+term.toString());
-				  System.out.println("EXP: "+exp.toString());
+				  //System.out.println("OP: "+op.toString());
+				  //System.out.println("TERM: "+term.toString());
+				  //System.out.println("EXP: "+exp.toString());
 				  result = new BinOpApp(op,term,exp);
 			  } else {
 				  error(token,"term _");
