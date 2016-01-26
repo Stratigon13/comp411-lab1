@@ -1,8 +1,7 @@
-package provided;
+
 
 import java.io.*;
 import java.util.*;
-import provided.ParseException;
 
 
 /** Jam lexer class.              

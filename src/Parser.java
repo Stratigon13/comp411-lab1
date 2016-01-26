@@ -1,10 +1,4 @@
-package provided;
 
-/** Parser for Assignment 2 */
-
-
-import provided.ParseException;
-import provided.Lexer;
 
 import java.io.*;
 import java.util.ArrayList;
