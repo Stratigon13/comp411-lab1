@@ -36,8 +36,14 @@ public class Parser {
 	  } catch (Exception e) {
 		  throw new ParseException("");
 	  }
-	  Token token = in.readToken();
-	  return result;
+	  Token token = in.peek();
+	  if (token == null){
+		  return result;
+	  }else{
+		  error(token,"expected EOF");
+		  return null;
+	  }
+	  
 
   }
   
@@ -57,7 +63,7 @@ public class Parser {
       
       if (token instanceof Constant) return (Constant) token;
       AST factor = parseFactor(token);
-      //System.out.println("FAC: "+factor.toString());
+      //System.err.println("FAC: "+factor.toString());
       Token next = in.peek();
       if (next == LeftParen.ONLY) {
     	//System.out.println(token.toString()+"(");
@@ -87,8 +93,6 @@ public class Parser {
 		  if (word.getName().equals("map")){
 			  token = in.readToken();
 			  ArrayList<Variable> vars = new ArrayList<Variable>();
-			  
-			  
 			  if (token instanceof Variable){
 				  Variable var = (Variable) token;
 				  vars.add(var);
