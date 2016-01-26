@@ -58,7 +58,7 @@ public class ParserFileTest extends TestCase {
     public void testParseFileFun() throws Exception {
         try {
             String output = "(f(x) + (x * 12))";
-            String input = "f(x) + (x * 12))";
+            String input = "(f(x) + (x * 12))";
             checkString("add  ", output, input);
 
         } catch (Exception e) {
@@ -138,7 +138,7 @@ public class ParserFileTest extends TestCase {
             put("src/00good.jam", true);
             put("src/01good.jam", true);
             put("src/02good.jam", true);
-//            put("src/03bad.jam",  false);
+            put("src/03bad.jam",  false);
 
 //            put("src/04bad.jam",  false);
             put("src/05good.jam", true);
@@ -176,7 +176,7 @@ public class ParserFileTest extends TestCase {
             fail("Critical error: IOException caught while reading input file");
             e.printStackTrace();
         } catch (ParseException e) {
-            System.err.println(programFilename);
+            System.err.println("\n"+programFilename);
             //System.err.println(parseString);
             boolean condition = inputFileMap.get(programFilename);
             assertEquals(condition, false);

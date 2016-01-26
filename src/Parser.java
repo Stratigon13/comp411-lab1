@@ -247,13 +247,16 @@ public class Parser {
   private AST[] parseArgs() {
 	  ArrayList<AST> args = new ArrayList<AST>();
 	  Token next = in.peek();
-	  while (next != RightParen.ONLY) {
+	  if (next != RightParen.ONLY){
 		  args.add(parseExp());
 		  next = in.peek();
-		  if (next instanceof Comma){
-			  in.readToken();
+		  while (next != RightParen.ONLY) {
+			  if (next instanceof Comma){
+				  in.readToken();
+			  }
+			  args.add(parseExp());
+			  next = in.peek();
 		  }
-		  next = in.peek();
 	  }
 	  in.readToken();
 	  AST[] arr = new AST[args.size()]; 
