@@ -221,6 +221,10 @@ public class Parser {
 	  }
   }
   
+  /** Parses:
+   *  <factor>   ::= ( <exp> ) | <prim> | <id>
+   * @param token   first token in input stream to be parsed; remainder in Lexer named in.
+   */
   private AST parseFactor(Token token) {
 	  AST exp = null;
 	  if (token == LeftParen.ONLY){
@@ -244,6 +248,9 @@ public class Parser {
 	  }
   }
   
+  /** Parses a sequence of expressions seperated by commas and the right parenthesis
+   * following the sequence of expressions and returns an array of their AST representations.
+   */
   private AST[] parseArgs() {
 	  ArrayList<AST> args = new ArrayList<AST>();
 	  Token next = in.peek();

@@ -1,7 +1,7 @@
-Sean Burton(srb6)
-Xiao Zheng(xz24)
+srb6
+xz24
 
-README for Comp 411, Project 01.
+README for Comp 411, Project 01 written by Sean Burton and Xiao Zheng.
 
 1. Outlines of the organization of my program:
    We decided to adhere to a more procedural paradigm as opposed to a more
@@ -17,7 +17,7 @@ methods parseFactor() which returns an AST representing the input Factor and
 parseArgs() which returns an array of ASTs representing Exps.
 
 
-2. The testing Process our team has used to confirm the correctness of our program:
+2. The testing process we used to confirm the correctness of our program:
    We wrote test cases for each method in order to test the correctness of our
 program. In addition, we ran each provided test case and checked that our
 parser failed only on bad inputs.

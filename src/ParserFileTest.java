@@ -140,20 +140,20 @@ public class ParserFileTest extends TestCase {
             put("src/02good.jam", true);
             put("src/03bad.jam",  false);
 
-//            put("src/04bad.jam",  false);
+            put("src/04bad.jam",  false);
             put("src/05good.jam", true);
             put("src/06good.jam", true);
 
-//            put("src/07bad.jam", false);
-//            put("src/08bad.jam", false);
+            put("src/07bad.jam", false);
+            put("src/08bad.jam", false);
             put("src/09good.jam", true);
 
 
             put("src/10bad.jam", false);
             put("src/12good.jam", true);
-//            put("src/14bad.jam",  false);
+            put("src/14bad.jam",  false);
             put("src/15good.jam",  true);
-//            put("src/16bad.jam", false);
+            put("src/16bad.jam", false);
             put("src/17good.jam", true);
         }
     };
