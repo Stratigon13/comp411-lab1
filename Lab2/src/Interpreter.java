@@ -1,6 +1,10 @@
+import java.io.IOException;
+import java.io.Reader;
+
 /**
  * Created by xiaozheng on 1/31/16.
  */
+
 public class Interpreter {
 
     /** file Interpreter.java **/
@@ -12,9 +16,9 @@ public class Interpreter {
         Interpreter(String fileName) throws IOException;
         Interpreter(Reader reader);
 
-        public JamVal callByValue() { ... };
-        public JamVal callByName()  { ... };
-        public JamVal callByNeed()  { ... };
+        public JamVal callByValue() {  };
+        public JamVal callByName()  {  };
+        public JamVal callByNeed()  {  };
     }
 
 }
