@@ -1,0 +1,20 @@
+Sean Burton(srb6)
+Xiao Zheng(xz24)
+
+README for Comp 411, Project 01.
+
+1. Outlines of the organization of my program:
+   We decided to adhere to a more procedural paradigm as opposed to a more object-oriented approach to construct the parse functions.
+in our program. We have written five parse related methods, parse(), parseExp(), parseFactor(), parseTerm(), and parseArgs().
+In our parse() method, we mainly called the parseExp() Method to parse the incoming string since most input
+string will come as a expression. And the parse() method will be the main function that we start to test in our testing
+program, since it is the only public method available from outside of the Parser Class. However we will try to cover every
+test case as possible.
+
+
+2. The testing Process our team has used to confirm the correctness of our program:
+   We will construct a test case for each individual method in order to test their correctness. So we will have to
+test the parsing condition in term of Exp, Term, Factor, ExpList, and IDList in term of unique single unit test case.
+And, in addition we will run through each provided test case that is given by the instructor in order to make sure the
+correctness of our program. For the bad input, the program should ideally output the corresponding error case, such as
+ParseExceptions, which should in turn be tested by my our test cases in order to cover every edge case.
