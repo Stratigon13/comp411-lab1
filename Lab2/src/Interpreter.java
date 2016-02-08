@@ -6,8 +6,8 @@ import java.io.Reader;
  */
 
 public class Interpreter {
-	
-	AST parsedExp = null;
+
+	AST nextAST = null;
 
     /** file Interpreter.java **/
     class EvalException extends RuntimeException {
@@ -21,56 +21,103 @@ public class Interpreter {
 
     Interpreter(String fileName) throws IOException{
     	Parser p = new Parser(fileName);
-    	parsedExp = p.parse();
-    	
+		nextAST = p.parse();
     }
 
     Interpreter(Reader reader){
     	Parser p = new Parser(reader);
-    	parsedExp = p.parse();
+		nextAST = p.parse();
     }
 
     public JamVal callByValue() {
     	ASTVisitor<JamVal> valueVis = new ASTVisitor<JamVal>() {
-    		  public JamVal forBoolConstant(BoolConstant b){
-    			  return b;
-    		  }
-    		  public JamVal forIntConstant(IntConstant i){
+			@Override
+			public JamVal forBoolConstant(BoolConstant b) {
+				final BoolConstant bb = b;
+				JamVal result = new JamVal() {
+					@Override
+					public <JamVal> JamVal accept(JamValVisitor<JamVal> jvv) {
+						return bb.accept(jvv);
+					}
+				};
+				return result;
+			};
+			@Override
+    		public JamVal forIntConstant(IntConstant i){
     			  return i;
     		  }
-    		  public JamVal forNullConstant(NullConstant n){
-    			  return n;
-    		  }
-    		  public JamVal forJamEmpty(JamEmpty je){
+			@Override
+    		public JamVal forNullConstant(NullConstant n){
+    			return n;
+			}
+			@Override
+    		public JamVal forJamEmpty(JamEmpty je){
     			  return je;
     		  }
-    		  public JamVal forVariable(Variable v){
+			@Override
+			public JamVal forVariable(Variable v){
     			  return v;
     		  }
-    		  public JamVal forPrimFun(PrimFun f){
+			@Override
+			public JamVal forPrimFun(PrimFun f){
     			  return f;
     		  }
-    		  public JamVal forUnOpApp(UnOpApp u){
+			@Override
+			public JamVal forUnOpApp(UnOpApp u){
     			  return u;
     		  }
-    		  public JamVal forBinOpApp(BinOpApp b){
+			@Override
+			public JamVal forBinOpApp(BinOpApp b){
     			  return b;
     		  }
-    		  public JamVal forApp(App a){
+			@Override
+    		public JamVal forApp(App a){
     			  return a;
     		  }
-    		  public JamVal forMap(Map m){
+			@Override
+    		public JamVal forMap(Map m){
     			  return m;
     		  }
-    		  public JamVal forIf(If i){
-    			  return i;
-    		  }
-    		  public JamVal forLet(Let l){
-    			  return l;
-    		  }
-    		};
-    	AST result = parsedExp.accept(valueVis);
-    }
+			@Override
+    		public JamVal forIf(If i){
+				nextAST = i.test();
+				JamVal testVal = callByValue();
+				Boolean res = testVal.accept(new JamValVisitor<Boolean>() {
+					@Override
+					public Boolean forBoolConstant(BoolConstant jb) {
+						return jb.value();
+					}
+
+					@Override
+					public Boolean forIntConstant(IntConstant ji) {
+						throw new EvalException("if was given int " + ji.toString());
+					}
+
+					@Override
+					public Boolean forJamFun(JamFun jf) {
+						throw new EvalException("if was given fun " + jf.toString());
+					}
+
+					@Override
+					public Boolean forJamList(JamList jl) {
+						throw new EvalException("if was given list " + jl.toString());
+					}
+				});
+				if (res) {
+					nextAST = i.conseq();
+					return callByValue();
+				} else {
+					nextAST = i.alt();
+					return callByValue();
+				}
+			}
+			@Override
+    		public JamVal forLet(Let l){
+    			return l;
+			}
+		};
+		JamVal result = nextAST.accept(valueVis);
+	}
 
     public JamVal callByName()  {
     	//TODO
