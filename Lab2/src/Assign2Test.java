@@ -2,6 +2,7 @@ import java.util.StringTokenizer;
 import junit.framework.TestCase;
 import java.io.*;
 
+
 public class Assign2Test extends TestCase {
 
     public Assign2Test (String name) {
@@ -90,7 +91,7 @@ public class Assign2Test extends TestCase {
             allCheck("evalException", output, input );
 
             fail("evalException did not throw EvalException exception");
-        } catch (EvalException e) {
+        } catch (Interpreter.EvalException e) {
             //e.printStackTrace();
 
         } catch (Exception e) {
