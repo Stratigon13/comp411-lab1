@@ -20,7 +20,7 @@ interface JamValVisitor<ResType> {
 /** JamVal classes */
 
 /** A Jam integer constant, also used to represent an integer token for parsing.  */
-class IntConstant implements Token, Constant, JamVal {
+class IntConstant implements Token, Constant {
   private int value;
   
   IntConstant(int i) { value = i; }
@@ -41,7 +41,7 @@ class IntConstant implements Token, Constant, JamVal {
 }
 
 /** A Jam boolean constant, also used to represent a boolean token for parsing. */
-class BoolConstant implements Token, Constant, JamVal {
+class BoolConstant implements Token, Constant {
   private boolean value;
   private BoolConstant(boolean b) { value = b; }
   
@@ -133,7 +133,7 @@ class Cons<ElemType> extends PureListClass<ElemType> {
 /** The Jam List class representing JamVals that are PureLists. 
   * JamList := JamEmpty | JamCons
   */
-interface JamList extends PureList<JamVal>, JamVal {
+interface JamList extends PureList<JamVal> {
   JamEmpty empty();
   JamCons cons(JamVal v);
 }
@@ -176,7 +176,7 @@ abstract class Binding {
 /** The class representing a Jam function (closure or primitive function). 
   * JamFun := JamClosure | PrimFun
   */
-abstract class JamFun implements JamVal {
+abstract class JamFun {
   public <ResType> ResType accept(JamValVisitor<ResType> jvv) { return jvv.forJamFun(this); }
   abstract public <ResType> ResType accept(JamFunVisitor<ResType> jfv);
 }
