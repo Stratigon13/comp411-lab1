@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.io.Reader;
+import java.lang.String;
 
 /**
  * Created by xiaozheng on 1/31/16.
@@ -67,7 +68,109 @@ public class Interpreter {
     		}
 			@Override
 			public JamVal forPrimFun(PrimFun f){
-    			  return f;
+				final PrimFun ff = f;
+				return f.accept(new PrimFunVisitor<JamVal>() {
+					@Override
+					public JamVal forArityPrim() {
+						//TODO
+						return null;
+					}
+
+					@Override
+					public JamVal forConsPPrim() {
+						Boolean res = ff.accept(new JamFunVisitor<Boolean>() {
+							@Override
+							public Boolean forJamClosure(JamClosure c) {
+								return c.env().accept(new PureListVisitor<Binding, Boolean>() {
+									@Override
+									public Boolean forEmpty(Empty<Binding> e) {
+										return false;
+									}
+
+									@Override
+									public Boolean forCons(Cons<Binding> c) {
+										return true;
+									}
+								});
+							}
+
+							@Override
+							public Boolean forPrimFun(PrimFun pf) {
+								return pf.equals(ConsPPrim.ONLY);
+							}
+						});
+						if (res)
+							return (JamVal) BoolConstant.TRUE;
+						else
+							return (JamVal) BoolConstant.FALSE;
+					}
+
+					@Override
+					public JamVal forConsPrim() {
+						//TODO
+						return null;
+					}
+
+					@Override
+					public JamVal forFirstPrim() {
+						//TODO
+						return null;
+					}
+
+					@Override
+					public JamVal forFunctionPPrim() {
+						//TODO
+						return null;
+					}
+
+					@Override
+					public JamVal forListPPrim() {
+						//TODO
+						return null;
+					}
+
+					@Override
+					public JamVal forNullPPrim() {
+						Boolean res = ff.accept(new JamFunVisitor<Boolean>() {
+							@Override
+							public Boolean forJamClosure(JamClosure c) {
+								return (c.env().accept(new PureListVisitor<Binding, Boolean>() {
+									@Override
+									public Boolean forEmpty(Empty<Binding> e) {
+										return true;
+									}
+
+									@Override
+									public Boolean forCons(Cons<Binding> c) {
+										return false;
+									}
+								}));
+							}
+
+							@Override
+							public Boolean forPrimFun(PrimFun pf) {
+								throw new EvalException("null prim got to prim fun");
+								//TODO?????
+							}
+						});
+						if (res)
+							return (JamVal) new BoolConstant().TRUE;
+						else
+							return (JamVal) new BoolConstant().FALSE;
+					}
+
+					@Override
+					public JamVal forNumberPPrim() {
+						//TODO
+						return null;
+					}
+
+					@Override
+					public JamVal forRestPrim() {
+						//TODO
+						return null;
+					}
+				};
     		}
 			@Override
 			public JamVal forUnOpApp(UnOpApp u){
@@ -77,7 +180,7 @@ public class Interpreter {
 				argVal.accept(new JamValVisitor<Boolean>() {
 					@Override
 					public Boolean forBoolConstant(BoolConstant jb) {
-						if (op.name == "~"){
+						if (op.name == DIVIDE){
 							if (jb.value())
 								return false;
 							else
@@ -89,9 +192,9 @@ public class Interpreter {
 
 					@Override
 					public Boolean forIntConstant(IntConstant ji) {
-						if (op.name == "+"){
+						if (op.name == PLUS){
 							return (ji.value() > 0);
-						} else if (op.name == "-"){
+						} else if (op.name == MINUS){
 							return (ji.value() < 0);
 						} else {
 							throw new EvalException("unop got " + op.toString() + "on an int");
@@ -120,10 +223,10 @@ public class Interpreter {
 				final JamVal arg2Val = callByValue(){
 				}
 				switch (op.name) {
-					case "+":
-					case "-":
-					case "*":
-					case "/":
+					case PLUS:
+					case MINUS:
+					case TIMES:
+					case DIVIDE:
 						arg1Val.accept(new JamValVisitor<IntConstant>() {
 							@Override
 							public IntConstant forBoolConstant(BoolConstant jb) {
@@ -134,13 +237,13 @@ public class Interpreter {
 							public IntConstant forIntConstant(IntConstant ji) {
 								int a = ji.value();
 								int b = ((IntConstant) arg2Val).value();
-								if (op.name == "+") {
+								if (op.name == PLUS) {
 									return new IntConstant(a + b);
-								} else if (op.name == "-") {
+								} else if (op.name == MINUS) {
 									return new IntConstant(a - b);
-								} else if (op.name == "*") {
+								} else if (op.name == TIMES) {
 									return new IntConstant(a * b);
-								} else if (op.name == "/") {
+								} else if (op.name == DIVIDE) {
 									if (b == 0) {
 										throw new EvalException("divide by zero");
 									}
@@ -159,35 +262,35 @@ public class Interpreter {
 							}
 						});
 						break;
-					case "=":
-					case "!=":
-					case "<":
-					case "<=":
-					case ">":
-					case ">=":
-					case "&":
-					case "|":
+					case EQUALS:
+					case NOT_EQUALS:
+					case LESS_THAN:
+					case LESS_THAN_EQUALS:
+					case GREATER_THAN:
+					case GREATER_THAN_EQUALS:
+					case AND:
+					case OR:
 						arg1Val.accept(new JamValVisitor<BoolConstant>() {
 							@Override
 							public BoolConstant forBoolConstant(BoolConstant jb) {
 								Boolean a = jb.value();
 								Boolean b = ((BoolConstant) arg2Val).value();
-								if (op.name == "="){
+								if (op.name == EQUALS){
 									if (a == b)
 										return BoolConstant.TRUE;
 									else
 										return BoolConstant.FALSE;
-								}else if (op.name == "!="){
+								}else if (op.name == NOT_EQUALS){
 									if (a != b)
 										return BoolConstant.TRUE;
 									else
 										return BoolConstant.FALSE;
-								}else if (op.name == "&"){
+								}else if (op.name == AND){
 									if (a && b)
 										return BoolConstant.TRUE;
 									else
 										return BoolConstant.FALSE;
-								}else if (op.name == "|"){
+								}else if (op.name == OR){
 									if (a || b)
 										return BoolConstant.TRUE;
 									else
@@ -201,32 +304,32 @@ public class Interpreter {
 							public BoolConstant forIntConstant(IntConstant ji) {
 								int a = ji.value();
 								int b = ((IntConstant) arg2Val).value();
-								if (op.name == "="){
+								if (op.name == EQUALS){
 									if (a == b)
 										return BoolConstant.TRUE;
 									else
 										return BoolConstant.FALSE;
-								}else if (op.name == "!=") {
+								}else if (op.name == NOT_EQUALS) {
 									if (a != b)
 										return BoolConstant.TRUE;
 									else
 										return BoolConstant.FALSE;
-								}else if (op.name == "<") {
+								}else if (op.name == LESS_THAN) {
 									if (a < b)
 										return BoolConstant.TRUE;
 									else
 										return BoolConstant.FALSE;
-								}else if (op.name == "<=") {
+								}else if (op.name == LESS_THAN_EQUALS) {
 									if (a <= b)
 										return BoolConstant.TRUE;
 									else
 										return BoolConstant.FALSE;
-								}else if (op.name == ">") {
+								}else if (op.name == GREATER_THAN) {
 									if (a > b)
 										return BoolConstant.TRUE;
 									else
 										return BoolConstant.FALSE;
-								}else if (op.name == ">=") {
+								}else if (op.name == GREATER_THAN_EQUALS) {
 									if (a >= b)
 										return BoolConstant.TRUE;
 									else
@@ -239,7 +342,7 @@ public class Interpreter {
 							public BoolConstant forJamFun(JamFun jf) {
 								int a = jf.hashCode();
 								int b = ((JamFun) arg2Val).hashCode();
-								if (op.name == "="){
+								if (op.name == EQUALS){
 									if (a == b)
 										return BoolConstant.TRUE;
 									else
@@ -254,7 +357,7 @@ public class Interpreter {
 							public BoolConstant forJamList(JamList jl) {
 								int a = jl.hashCode();
 								int b = ((JamList) arg2Val).hashCode();
-								if (op.name == "="){
+								if (op.name == EQUALS){
 									if (a == b)
 										return BoolConstant.TRUE;
 									else
@@ -265,16 +368,20 @@ public class Interpreter {
 
 							}
 						});
+				default:
+					throw new EvalException("unrecognized op");
 				}
 			}
 			@Override
     		public JamVal forApp(App a){
-    			  return a;
-    		  }
+				//TODO
+				return a;
+			}
 			@Override
     		public JamVal forMap(Map m){
-    			  return m;
-    		  }
+				//TODO
+				return m;
+    		}
 			@Override
     		public JamVal forIf(If i){
 				nextAST = i.test();
@@ -310,6 +417,7 @@ public class Interpreter {
 			}
 			@Override
     		public JamVal forLet(Let l){
+				//TODO
     			return l;
 			}
 		};
