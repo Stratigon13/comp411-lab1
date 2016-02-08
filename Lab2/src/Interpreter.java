@@ -96,6 +96,7 @@ public class Interpreter {
 
 							@Override
 							public Boolean forPrimFun(PrimFun pf) {
+								//TODO????
 								return pf.equals(ConsPPrim.ONLY);
 							}
 						});
