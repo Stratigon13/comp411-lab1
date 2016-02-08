@@ -1,313 +1,329 @@
+/** AST ::= BoolConstant | IntConstant | JamEmpty | Variable | PrimFun | UnOpApp | BinOpApp | App | Map | If | Let */
 
+/** AST class definitions */
 
-
-/** Jam general AST type */
-public interface AST {
-  public <T> T accept(ASTVisitor<T> v);
+/** The AST type which support a visitor interface */
+interface AST {
+  public <ResType> ResType accept(ASTVisitor<ResType> v);
 }
 
-/** Visitor class for general AST type */
-interface ASTVisitor<T> {
-  T forBoolConstant(BoolConstant b);
-  T forIntConstant(IntConstant i);
-  T forNullConstant(NullConstant n);
-  T forVariable(Variable v);
-  T forPrimFun(PrimFun f);
-  T forUnOpApp(UnOpApp u);
-  T forBinOpApp(BinOpApp b);
-  T forApp(App a);
-  T forMap(Map m);
-  T forIf(If i);
-  T forLet(Let l);
+interface ASTVisitor<ResType> {
+  ResType forBoolConstant(BoolConstant b);
+  ResType forIntConstant(IntConstant i);
+  ResType forNullConstant(NullConstant n);
+  ResType forJamEmpty(JamEmpty je);
+  ResType forVariable(Variable v);
+  ResType forPrimFun(PrimFun f);
+  ResType forUnOpApp(UnOpApp u);
+  ResType forBinOpApp(BinOpApp b);
+  ResType forApp(App a);
+  ResType forMap(Map m);
+  ResType forIf(If i);
+  ResType forLet(Let l);
 }
 
-/** Jam term AST type */
-interface Term extends AST {
-  public <T> T accept(ASTVisitor<T> v);
-}
+/** Term ::= Constant | PrimFun | Variable */
+interface Term extends AST {}
 
-/** Jam constant type */
-interface Constant extends Term {
-  public <T> T accept(ASTVisitor<T> v);
-}
+/* NOTE: all Constant objects belong to the types Token and AST; Constant tokens evaluate to themselves.
+ * The variant classes (IntConstant, BoolConstant, JamEmpty) are defined in the file  ValuesTokens.java */
 
-enum TokenType {
-  BOOL, INT, NULL, PRIM_FUN, VAR, OPERATOR, KEYWORD,
-  LEFT_PAREN, RIGHT_PAREN, LEFT_BRACK, RIGHT_BRACK,
-  LEFT_BRACE, RIGHT_BRACE, COMMA, SEMICOLON;
-}
+/** Constant ::= IntConstant | BoolConstant | NullConstant */
+interface Constant extends Term, Token {}
 
-/** Jam token type */
-interface Token {
-  public TokenType getType();
-}
-
-/** Jam Boolean constant class */
-class BoolConstant implements Token, Constant {
-  private boolean value;
-  private BoolConstant(boolean b) { value = b; }
-
-  // ** singleton pattern **
-  public static final BoolConstant FALSE = new BoolConstant(false);
-  public static final BoolConstant TRUE = new BoolConstant(true);
-
-  public boolean getValue() { return value; }
-
-  public <T> T accept(ASTVisitor<T> v) { return v.forBoolConstant(this); }
-  public String toString() { return String.valueOf(value); }
-  public TokenType getType() { return TokenType.BOOL; }
-}
-
-/** Jam integer constant class */
-class IntConstant implements Token, Constant {
-  private int value;
-
-  IntConstant(int i) { value = i; }
-  // duplicates can occur!
-
-  public int getValue() { return value; }
-
-  public <T> T accept(ASTVisitor<T> v) { return v.forIntConstant(this); }
-  public String toString() { return String.valueOf(value); }
-  public TokenType getType() { return TokenType.INT; }
-}
-
-/** Jam null constant class, which is a singleton */
-class NullConstant implements Token, Constant {
-  public static final NullConstant ONLY = new NullConstant();
-  private NullConstant() {}
-  public <T> T accept(ASTVisitor<T> v) { return v.forNullConstant(this); }
-  public String toString() { return "null"; }
-  public TokenType getType() { return TokenType.NULL; }
-}
-
-/** Jam primitive function Class */
-class PrimFun implements Token, Term {
-  private String name;
-
-  PrimFun(String n) { name = n; }
-
-  public String getName() { return name; }
-  public <T> T accept(ASTVisitor<T> v) { return v.forPrimFun(this); }
+/** UnOp ::= UnOpPlus | UnOpMinus | OpNot */
+/** Class representing the unary operator within a UnOppApp. */
+abstract class UnOp {
+  String name;
+  public UnOp(String s) { name = s; }
   public String toString() { return name; }
-  public TokenType getType() { return TokenType.PRIM_FUN; }
+  public abstract <ResType> ResType accept(UnOpVisitor<ResType> v);
 }
 
-/** Jam variable class */
-class Variable implements Token, Term {
-  private String name;
-  Variable(String n) { name = n; }
+/** Visitor for the UnOp union type. */
+interface UnOpVisitor<ResType> {
+  ResType forUnOpPlus(UnOpPlus op);
+  ResType forUnOpMinus(UnOpMinus op);
+  ResType forOpTilde(OpNot op);
+  // ResType forOpBang(OpBang op);  // Supports ref cell extension to Jam
+  // ResType forOpRef(OpRef op);    // Supports ref cell extension to Jam
+}
 
-  public String getName() { return name; }
-  public <T> T accept(ASTVisitor<T> v) { return v.forVariable(this); }
+/** BinOp ::= BinOpPlus | BinOpMinus | OpTimes | OpDivide | OpEquals | OpNotEquals | OpLessThan | OpGreaterThan |
+  *           OpLessThanOrEquals OpGreaterThanOrEquals | OpAnd | OpOr */
+
+/** Class representing the binary operator within a BinOppApp. */
+abstract class BinOp {
+  String name;
+  public BinOp(String s) { name = s; }
   public String toString() { return name; }
-  public TokenType getType() { return TokenType.VAR; }
+  public abstract <ResType> ResType accept(BinOpVisitor<ResType> v);
 }
 
-/** Jam operator class */
-class Op implements Token {
-  private String symbol;
-  private boolean isUnOp;
-  private boolean isBinOp;
-  Op(String s, boolean iu, boolean ib) {
-    symbol = s; isUnOp = iu; isBinOp = ib;
+/** Visitor for the BinOp union type. */
+interface BinOpVisitor<ResType> {
+  ResType forBinOpPlus(BinOpPlus op);
+  ResType forBinOpMinus(BinOpMinus op);
+  ResType forOpTimes(OpTimes op);
+  ResType forOpDivide(OpDivide op);
+  ResType forOpEquals(OpEquals op);
+  ResType forOpNotEquals(OpNotEquals op);
+  ResType forOpLessThan(OpLessThan op);
+  ResType forOpGreaterThan(OpGreaterThan op);
+  ResType forOpLessThanEquals(OpLessThanEquals op);
+  ResType forOpGreaterThanEquals(OpGreaterThanEquals op);
+  ResType forOpAnd(OpAnd op);
+  ResType forOpOr(OpOr op);
+  // ResType forOpGets(OpGets op);  // Supports the ref cell extension to Jam
+}
+
+class UnOpPlus extends UnOp {
+  public static final UnOpPlus ONLY = new UnOpPlus();
+  private UnOpPlus() { super("+"); }
+  public <ResType> ResType accept(UnOpVisitor<ResType> v) {
+    return v.forUnOpPlus(this); 
   }
-  Op(String s) {
-    // isBinOp only!
-    this(s,false,true);
+}
+
+class UnOpMinus extends UnOp {
+  public static final UnOpMinus ONLY = new UnOpMinus();
+  private UnOpMinus() { super("-"); }
+  public <ResType> ResType accept(UnOpVisitor<ResType> v) {
+    return v.forUnOpMinus(this); 
   }
-  public String getSymbol() { return symbol; }
-  public boolean isUnOp() { return isUnOp; }
-  public boolean isBinOp() { return isBinOp; }
-  public String toString() { return symbol; }
-  public TokenType getType() { return TokenType.OPERATOR; }
 }
 
-class KeyWord implements Token {
-  private String name;
-
-  KeyWord(String n) { name = n; }
-  public String getName() { return name; }
-  public String toString() { return name; }
-  public TokenType getType() { return TokenType.KEYWORD; }
+class OpNot extends UnOp {
+  public static final OpNot ONLY = new OpNot();
+  private OpNot() { super("~"); }
+  public <ResType> ResType accept(UnOpVisitor<ResType> v) {
+    return v.forOpTilde(this); 
+  }
 }
 
-/** Jam left paren token */
-class LeftParen implements Token {
-  public String toString() { return "("; }
-  private LeftParen() {}
-  public static final LeftParen ONLY = new LeftParen();
-  public TokenType getType() { return TokenType.LEFT_PAREN; }
+/*  Supports ref cell extension to Jam
+  class OpBang extends UnOp {
+  public static final OpBang ONLY = new OpBang();
+  private OpBang() { super("!"); }
+  public <ResType> ResType accept(UnOpVisitor<ResType> v) {
+    return v.forOpBang(this); 
+  }
 }
 
-/** Jam right paren token */
-class RightParen implements Token {
-  public String toString() { return ")"; }
-  private RightParen() {}
-  public static final RightParen ONLY = new RightParen();
-  public TokenType getType() { return TokenType.RIGHT_PAREN; }
+class OpRef extends UnOp {
+  public static final OpRef ONLY = new OpRef();
+  private OpRef() { super("ref"); }
+  public <ResType> ResType accept(UnOpVisitor<ResType> v) {
+    return v.forOpRef(this); 
+  }
+}
+*/
+
+class BinOpPlus extends BinOp {
+  public static final BinOpPlus ONLY = new BinOpPlus();
+  private BinOpPlus() { super("+"); }
+  public <ResType> ResType accept(BinOpVisitor<ResType> v) {
+    return v.forBinOpPlus(this); 
+  }
 }
 
-/** Jam left bracket token */
-class LeftBrack implements Token {
-  public String toString() { return "["; }
-  private LeftBrack() {}
-  public static final LeftBrack ONLY = new LeftBrack();
-  public TokenType getType() { return TokenType.LEFT_BRACK; }
+class BinOpMinus extends BinOp {
+  public static final BinOpMinus ONLY = new BinOpMinus();
+  private BinOpMinus() { super("-"); }
+  public <ResType> ResType accept(BinOpVisitor<ResType> v) {
+    return v.forBinOpMinus(this); 
+  }
 }
 
-/** Jam right bracket token */
-class RightBrack implements Token {
-  public String toString() { return "]"; }
-  private RightBrack() {}
-  public static final RightBrack ONLY = new RightBrack();
-  public TokenType getType() { return TokenType.RIGHT_BRACK; }
+class OpTimes extends BinOp {
+  public static final OpTimes ONLY = new OpTimes();
+  private OpTimes() { super("*"); }
+  public <ResType> ResType accept(BinOpVisitor<ResType> v) {
+    return v.forOpTimes(this); 
+  }
 }
 
-/** Jam left brace token */
-class LeftBrace implements Token {
-  public String toString() { return "{"; }
-  private LeftBrace() {}
-  public static final LeftBrace ONLY = new LeftBrace();
-  public TokenType getType() { return TokenType.LEFT_BRACE; }
+class OpDivide extends BinOp {
+  public static final OpDivide ONLY = new OpDivide();
+  private OpDivide() { super("/"); }
+  public <ResType> ResType accept(BinOpVisitor<ResType> v) {
+    return v.forOpDivide(this); 
+  }
 }
 
-/** Jam right brace token */
-class RightBrace implements Token {
-  public String toString() { return "}"; }
-  private RightBrace() {}
-  public static final RightBrace ONLY = new RightBrace();
-  public TokenType getType() { return TokenType.RIGHT_BRACE; }
+class OpEquals extends BinOp {
+  public static final OpEquals ONLY = new OpEquals();
+  private OpEquals() { super("="); }
+  public <ResType> ResType accept(BinOpVisitor<ResType> v) {
+    return v.forOpEquals(this); 
+  }
 }
 
-/** Jam comma token */
-class Comma implements Token {
-  public String toString() { return ","; }
-  private Comma() {}
-  public static final Comma ONLY = new Comma();
-  public TokenType getType() { return TokenType.COMMA; }
+class OpNotEquals extends BinOp {
+  public static final OpNotEquals ONLY = new OpNotEquals();
+  private OpNotEquals() { super("!="); }
+  public <ResType> ResType accept(BinOpVisitor<ResType> v) {
+    return v.forOpNotEquals(this); 
+  }
 }
 
-/** Jam semi-colon token */
-class SemiColon implements Token {
-  public String toString() { return ";"; }
-  private SemiColon() {}
-  public static final SemiColon ONLY = new SemiColon();
-  public TokenType getType() { return TokenType.SEMICOLON; }
+class OpLessThan extends BinOp {
+  public static final OpLessThan ONLY = new OpLessThan();
+  private OpLessThan() { super("<"); }
+  public <ResType> ResType accept(BinOpVisitor<ResType> v) {
+    return v.forOpLessThan(this); 
+  }
 }
 
+class OpGreaterThan extends BinOp {
+  public static final OpGreaterThan ONLY = new OpGreaterThan();
+  private OpGreaterThan() { super(">"); }
+  public <ResType> ResType accept(BinOpVisitor<ResType> v) {
+    return v.forOpGreaterThan(this); 
+  }
+}
 
-// AST class definitions
+class OpLessThanEquals extends BinOp {
+  public static final OpLessThanEquals ONLY = new OpLessThanEquals();
+  private OpLessThanEquals() { super("<="); }
+  public <ResType> ResType accept(BinOpVisitor<ResType> v) {
+    return v.forOpLessThanEquals(this); 
+  }
+}
 
-/** Jam unary operator application class */
+class OpGreaterThanEquals extends BinOp {
+  public static final OpGreaterThanEquals ONLY = new OpGreaterThanEquals();
+  private OpGreaterThanEquals() { super(">="); }
+  public <ResType> ResType accept(BinOpVisitor<ResType> v) {
+    return v.forOpGreaterThanEquals(this); 
+  }
+}
+
+class OpAnd extends BinOp {
+  public static final OpAnd ONLY = new OpAnd();
+  private OpAnd() { super("&"); }
+  public <ResType> ResType accept(BinOpVisitor<ResType> v) {
+    return v.forOpAnd(this); 
+  }
+}
+
+class OpOr extends BinOp {
+  public static final OpOr ONLY = new OpOr();
+  private OpOr() { super("|"); }
+  public <ResType> ResType accept(BinOpVisitor<ResType> v) {
+    return v.forOpOr(this); 
+  }
+}
+
+/* Supports the ref cell extension to Jam
+class OpGets extends BinOp {
+  public static final OpGets ONLY = new OpGets();
+  private OpGets() { super("<-"); }
+  public <ResType> ResType accept(BinOpVisitor<ResType> v) {
+    return v.forOpGets(this); 
+  }
+}
+*/
+
 class UnOpApp implements AST {
-  private Op rator;
+  private UnOp rator;
   private AST arg;
-
-  UnOpApp(Op r, AST a) { rator = r; arg = a; }
-
-  public Op getRator() { return rator; }
-  public AST getArg() { return arg; }
-  public <T> T accept(ASTVisitor<T> v) { return v.forUnOpApp(this); }
+  
+  UnOpApp(UnOp r, AST a) { rator = r; arg = a; }
+  
+  public UnOp rator() { return rator; }
+  public AST arg() { return arg; }
+  public <ResType> ResType accept(ASTVisitor<ResType> v) { return v.forUnOpApp(this); }
   public String toString() { return rator + " " + arg; }
 }
 
-/** Jam binary operator application class */
 class BinOpApp implements AST {
-  private Op rator;
+  private BinOp rator;
   private AST arg1, arg2;
-
-  BinOpApp(Op r, AST a1, AST a2) { rator = r; arg1 = a1; arg2 = a2; }
-
-  public Op getRator() { return rator; }
-  public AST getArg1() { return arg1; }
-  public AST getArg2() { return arg2; }
-  public <T> T accept(ASTVisitor<T> v) { return v.forBinOpApp(this); }
+  
+  BinOpApp(BinOp r, AST a1, AST a2) { rator = r; arg1 = a1; arg2 = a2; }
+  
+  public BinOp rator() { return rator; }
+  public AST arg1() { return arg1; }
+  public AST arg2() { return arg2; }
+  public <ResType> ResType accept(ASTVisitor<ResType> v) { return v.forBinOpApp(this); }
   public String toString() { 
     return "(" + arg1 + " " + rator + " " + arg2 + ")"; 
   }
 }
 
-/** Jam map (closure) class */
 class Map implements AST {
   private Variable[] vars;
   private AST body;
-
+  
   Map(Variable[] v, AST b) { vars = v; body = b; }
-  public Variable[] getVars() { return vars; }
-  public AST getBody() { return body; }
-  public <T> T accept(ASTVisitor<T> v) { return v.forMap(this); }
+  public Variable[] vars() { return vars; }
+  public AST body() { return body; }
+  public <ResType> ResType accept(ASTVisitor<ResType> v) { return v.forMap(this); }
   public String toString() { 
-    return "map " + ToString.toString(vars,",") + " to " + body ;
+    return "map " + ToString.toString(vars,",") + " to " + body;
   }
 }  
 
-/** Jam function (PrimFun or Map) application class */
 class App implements AST {
   private AST rator;
   private AST[] args;
-
+  
   App(AST r, AST[] a) { rator = r; args = a; }
-
-  public AST getRator() { return rator; }
-  public AST[] getArgs() { return args; }
-
-  public <T> T accept(ASTVisitor<T> v) { return v.forApp(this); }
+  
+  public AST rator() { return rator; }
+  public AST[] args() { return args; }
+  
+  public <ResType> ResType accept(ASTVisitor<ResType> v) { return v.forApp(this); }
   public String toString() { 
-    if ((rator instanceof Variable) || (rator instanceof PrimFun))
+    if ((rator instanceof PrimFun) || (rator instanceof Variable))
       return rator + "(" + ToString.toString(args,", ") + ")"; 
     else
       return "(" +  rator + ")(" + ToString.toString(args,", ") + ")"; 
   }
 }  
 
-/** Jam if expression class */
 class If implements AST {
   private AST test, conseq, alt;
   If(AST t, AST c, AST a) { test = t; conseq = c; alt = a; }
-
-  public AST getTest() { return test; }
-  public AST getConseq() { return conseq; }
-  public AST getAlt() { return alt; }
-  public <T> T accept(ASTVisitor<T> v) { return v.forIf(this); }
+  
+  public AST test() { return test; }
+  public AST conseq() { return conseq; }
+  public AST alt() { return alt; }
+  public <ResType> ResType accept(ASTVisitor<ResType> v) { return v.forIf(this); }
   public String toString() { 
     return "if " + test + " then " + conseq + " else " + alt ; 
   }
 }  
 
-/** Jam let expression class */
 class Let implements AST {
   private Def[] defs;
   private AST body;
   Let(Def[] d, AST b) { defs = d; body = b; }
-
-  public <T> T accept(ASTVisitor<T> v) { return v.forLet(this); }
-  public Def[] getDefs() { return defs; }
-  public AST getBody() { return body; }
+  
+  public <ResType> ResType accept(ASTVisitor<ResType> v) { return v.forLet(this); }
+  public Def[] defs() { return defs; }
+  public AST body() { return body; }
   public String toString() { 
     return "let " + ToString.toString(defs," ") + " in " + body; 
   }
 }  
 
-
-/** Jam definition class */
+/** Def class representing a definition embedded inside a Let. */
 class Def {
   private Variable lhs;
   private AST rhs;  
-
+  
   Def(Variable l, AST r) { lhs = l; rhs = r; }
-  public Variable getLhs() { return lhs; }
-  public AST getRhs() { return rhs; }
-
+  public Variable lhs() { return lhs; }
+  public AST rhs() { return rhs; }
+  
   public String toString() { return lhs + " := " + rhs + ";"; }
 }
 
-/** String utility class */
+/** Dummy class containing an improved toString method for arrays. */
 class ToString {
-
-  /** prints array a with separator s between elements 
-   *  this method does NOT accept a == null, since null
-   *  is NOT an array */
+  
   public static String toString(Object[] a, String s) {
     StringBuffer result = new StringBuffer();
     for (int i = 0; i < a.length; i++) {
@@ -320,4 +336,3 @@ class ToString {
     return result.toString();
   }
 }
-

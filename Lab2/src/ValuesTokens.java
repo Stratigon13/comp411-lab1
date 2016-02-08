@@ -1,7 +1,7 @@
 /* JamVal and Token Data Definitions */
 
 import java.util.NoSuchElementException;
-  
+
 /** A data object representing a Jam value.
   * JamVal := IntConstant | BoolConstant | JamList | JamFun */
 interface JamVal {
@@ -52,7 +52,7 @@ class BoolConstant implements Token, Constant, JamVal {
   /** A factory method that returns BoolConstant corresponding to b. It is atatic because
     * it does not depend on this. */
   public static BoolConstant toBoolConstant(boolean b) { 
-    if (b) return TRUE; 
+    if (b) return TRUE;
     else return FALSE;
   }
   

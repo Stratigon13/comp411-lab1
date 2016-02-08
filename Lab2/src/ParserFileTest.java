@@ -134,7 +134,12 @@ public class ParserFileTest extends TestCase {
 
 
     HashMap<String, Boolean> inputFileMap = new HashMap<String, Boolean>() {
-        {
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = -659262329306465517L;
+
+		{
             put("src/00good.jam", true);
             put("src/01good.jam", true);
             put("src/02good.jam", true);
