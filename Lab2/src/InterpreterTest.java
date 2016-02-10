@@ -43,13 +43,64 @@ public class InterpreterTest extends TestCase {
         try {
             String output = "number?";
             String input = "number?";
-            allCheck("numberP", output, input );
+            allCheck("numberP", output, input);
 
         } catch (Exception e) {
             e.printStackTrace();
             fail("numberP threw " + e);
         }
     } //end of func
+
+    public void testFunctionP() {
+        try {
+            String output = "function?";
+            String input = "function?";
+            allCheck("functionP", output, input);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("functionP threw " + e);
+        }
+    } //end of func
+
+    public void testConsP() {
+        try {
+            String output = "con?";
+            String input = "con?";
+            allCheck("conP", output, input);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("functionP threw " + e);
+        }
+    } //end of func
+
+    public void testNullP() {
+        try {
+            String output = "null?";
+            String input = "null?";
+            allCheck("nullP", output, input);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("nullP threw " + e);
+        }
+    }
+
+    public void testlistP() {
+        try {
+            String output = "list?";
+            String input = "list?";
+            allCheck("listP", output, input);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("listP threw " + e);
+        }
+    }
+
+
+
 
 
 
