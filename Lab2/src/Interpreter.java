@@ -6,6 +6,9 @@ import java.lang.String;
  * Created by xiaozheng on 1/31/16.
  */
 
+
+
+
 public class Interpreter {
 
 	AST nextAST = null;
@@ -64,7 +67,7 @@ public class Interpreter {
 			}
 			@Override
 			public JamVal forVariable(Variable v){
-    			  return v;
+				return (JamVal) JamEmpty.ONLY;
     		}
 			@Override
 			public JamVal forPrimFun(PrimFun f){
@@ -155,9 +158,9 @@ public class Interpreter {
 							}
 						});
 						if (res)
-							return (JamVal) new BoolConstant().TRUE;
+							return (JamVal) BoolConstant.TRUE;
 						else
-							return (JamVal) new BoolConstant().FALSE;
+							return (JamVal) BoolConstant.FALSE;
 					}
 
 					@Override
@@ -171,7 +174,7 @@ public class Interpreter {
 						//TODO
 						return null;
 					}
-				};
+				});
     		}
 			@Override
 			public JamVal forUnOpApp(UnOpApp u){
@@ -181,7 +184,7 @@ public class Interpreter {
 				argVal.accept(new JamValVisitor<Boolean>() {
 					@Override
 					public Boolean forBoolConstant(BoolConstant jb) {
-						if (op.name == DIVIDE){
+						if (op.name == "/"){
 							if (jb.value())
 								return false;
 							else
@@ -193,9 +196,9 @@ public class Interpreter {
 
 					@Override
 					public Boolean forIntConstant(IntConstant ji) {
-						if (op.name == PLUS){
+						if (op.name == "+"){
 							return (ji.value() > 0);
-						} else if (op.name == MINUS){
+						} else if (op.name == "-"){
 							return (ji.value() < 0);
 						} else {
 							throw new EvalException("unop got " + op.toString() + "on an int");
@@ -212,22 +215,21 @@ public class Interpreter {
 						throw new EvalException("unop was given list " + jl.toString());
 					}
 				});
-
-
+				throw new EvalException("unreachable code in unop app");
     		}
 			@Override
-			public JamVal forBinOpApp(BinOpApp b){
+			public JamVal forBinOpApp(BinOpApp b) {
     			final BinOp op = b.rator();
 				nextAST = b.arg1();
 				final JamVal arg1Val = callByValue();
 				nextAST = b.arg2();
-				final JamVal arg2Val = callByValue(){
+				final JamVal arg2Val = callByValue();{
 				}
 				switch (op.name) {
-					case PLUS:
-					case MINUS:
-					case TIMES:
-					case DIVIDE:
+					case "+":
+					case "-":
+					case "*":
+					case "/":
 						arg1Val.accept(new JamValVisitor<IntConstant>() {
 							@Override
 							public IntConstant forBoolConstant(BoolConstant jb) {
@@ -238,17 +240,20 @@ public class Interpreter {
 							public IntConstant forIntConstant(IntConstant ji) {
 								int a = ji.value();
 								int b = ((IntConstant) arg2Val).value();
-								if (op.name == PLUS) {
+								if (op.name == "+") {
 									return new IntConstant(a + b);
-								} else if (op.name == MINUS) {
+								} else if (op.name == "-") {
 									return new IntConstant(a - b);
-								} else if (op.name == TIMES) {
+								} else if (op.name == "*") {
 									return new IntConstant(a * b);
-								} else if (op.name == DIVIDE) {
+								} else if (op.name == "/") {
 									if (b == 0) {
 										throw new EvalException("divide by zero");
 									}
 									return new IntConstant(a / b);
+								}
+								else{
+									throw new EvalException("unknown operator" + op.name);
 								}
 							}
 
@@ -263,35 +268,35 @@ public class Interpreter {
 							}
 						});
 						break;
-					case EQUALS:
-					case NOT_EQUALS:
-					case LESS_THAN:
-					case LESS_THAN_EQUALS:
-					case GREATER_THAN:
-					case GREATER_THAN_EQUALS:
-					case AND:
-					case OR:
+					case "=":
+					case "!=":
+					case "<":
+					case "<=":
+					case ">":
+					case ">=":
+					case "&":
+					case "|":
 						arg1Val.accept(new JamValVisitor<BoolConstant>() {
 							@Override
 							public BoolConstant forBoolConstant(BoolConstant jb) {
 								Boolean a = jb.value();
 								Boolean b = ((BoolConstant) arg2Val).value();
-								if (op.name == EQUALS){
+								if (op.name == "="){
 									if (a == b)
 										return BoolConstant.TRUE;
 									else
 										return BoolConstant.FALSE;
-								}else if (op.name == NOT_EQUALS){
+								}else if (op.name == "!="){
 									if (a != b)
 										return BoolConstant.TRUE;
 									else
 										return BoolConstant.FALSE;
-								}else if (op.name == AND){
+								}else if (op.name == "&"){
 									if (a && b)
 										return BoolConstant.TRUE;
 									else
 										return BoolConstant.FALSE;
-								}else if (op.name == OR){
+								}else if (op.name == "|"){
 									if (a || b)
 										return BoolConstant.TRUE;
 									else
@@ -305,32 +310,32 @@ public class Interpreter {
 							public BoolConstant forIntConstant(IntConstant ji) {
 								int a = ji.value();
 								int b = ((IntConstant) arg2Val).value();
-								if (op.name == EQUALS){
+								if (op.name == "="){
 									if (a == b)
 										return BoolConstant.TRUE;
 									else
 										return BoolConstant.FALSE;
-								}else if (op.name == NOT_EQUALS) {
+								}else if (op.name == "!=") {
 									if (a != b)
 										return BoolConstant.TRUE;
 									else
 										return BoolConstant.FALSE;
-								}else if (op.name == LESS_THAN) {
+								}else if (op.name == "<") {
 									if (a < b)
 										return BoolConstant.TRUE;
 									else
 										return BoolConstant.FALSE;
-								}else if (op.name == LESS_THAN_EQUALS) {
+								}else if (op.name == "<=") {
 									if (a <= b)
 										return BoolConstant.TRUE;
 									else
 										return BoolConstant.FALSE;
-								}else if (op.name == GREATER_THAN) {
+								}else if (op.name == ">") {
 									if (a > b)
 										return BoolConstant.TRUE;
 									else
 										return BoolConstant.FALSE;
-								}else if (op.name == GREATER_THAN_EQUALS) {
+								}else if (op.name == ">=") {
 									if (a >= b)
 										return BoolConstant.TRUE;
 									else
@@ -343,7 +348,7 @@ public class Interpreter {
 							public BoolConstant forJamFun(JamFun jf) {
 								int a = jf.hashCode();
 								int b = ((JamFun) arg2Val).hashCode();
-								if (op.name == EQUALS){
+								if (op.name == "="){
 									if (a == b)
 										return BoolConstant.TRUE;
 									else
@@ -358,7 +363,7 @@ public class Interpreter {
 							public BoolConstant forJamList(JamList jl) {
 								int a = jl.hashCode();
 								int b = ((JamList) arg2Val).hashCode();
-								if (op.name == EQUALS){
+								if (op.name == "="){
 									if (a == b)
 										return BoolConstant.TRUE;
 									else
@@ -372,16 +377,17 @@ public class Interpreter {
 				default:
 					throw new EvalException("unrecognized op");
 				}
+				throw new EvalException("unreacheable code in binop app");
 			}
 			@Override
     		public JamVal forApp(App a){
 				//TODO
-				return a;
+				return (JamVal) JamEmpty.ONLY;
 			}
 			@Override
     		public JamVal forMap(Map m){
 				//TODO
-				return m;
+				return (JamVal) JamEmpty.ONLY;
     		}
 			@Override
     		public JamVal forIf(If i){
@@ -419,19 +425,20 @@ public class Interpreter {
 			@Override
     		public JamVal forLet(Let l){
 				//TODO
-    			return l;
+				return (JamVal) JamEmpty.ONLY;
 			}
 		};
 		JamVal result = nextAST.accept(valueVis);
+		return result;
 	}
 
     public JamVal callByName()  {
     	//TODO
-    	return new JamVal();
+    	return (JamVal) JamEmpty.ONLY;
     }
     public JamVal callByNeed()  {
     	//TODO
-    	return new JamVal();
+    	return (JamVal) JamEmpty.ONLY;
     }
 
 }
