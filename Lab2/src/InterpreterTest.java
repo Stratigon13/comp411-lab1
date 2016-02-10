@@ -51,6 +51,20 @@ public class InterpreterTest extends TestCase {
         }
     } //end of func
 
+    public void testFunctionP() {
+        try {
+            String output = "function?";
+            String input = "function?";
+            allCheck("functionP", output, input );
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("functionP threw " + e);
+        }
+    } //end of func
+
+
+
 
 
 
