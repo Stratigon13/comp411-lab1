@@ -39,6 +39,7 @@ public class InterpreterTest extends TestCase {
         needCheck(name, answer, program);
     }
 
+
     @Test
     public void testIntConstant() {
         try {
@@ -77,6 +78,7 @@ public class InterpreterTest extends TestCase {
             fail("boolConst threw " + e);
         }
     }
+
 
 
 //    @Test
@@ -149,13 +151,14 @@ public class InterpreterTest extends TestCase {
     @Test
     public void testArityP() {
         try {
+
             String output = "arity";
             String input = "arity";
-            //allCheck("nullP", output, input);
+            valueCheck("arity", output, input);
 
         } catch (Exception e) {
             //e.printStackTrace();
-            fail("nullP threw " + e);
+            fail("arityP threw " + e);
         }
     }
 
@@ -166,6 +169,8 @@ public class InterpreterTest extends TestCase {
             String output = "list?";
             String input = "list?";
             //allCheck("listP", output, input);
+
+            valueCheck("nullP", output, input);
 
         } catch (Exception e) {
             //e.printStackTrace();
@@ -179,7 +184,6 @@ public class InterpreterTest extends TestCase {
             String output = "list";
             String input = "list";
             allCheck("list", output, input);
-
         } catch (Exception e) {
             //e.printStackTrace();
             fail("listP threw " + e);
@@ -239,7 +243,7 @@ public class InterpreterTest extends TestCase {
         try {
             String output = "18";
             String input = "2 * 3 + 12";
-            allCheck("mathOp2", output, input);
+            valueCheck("mathOp2", output, input);
 
         } catch (Exception e) {
             //e.printStackTrace();
@@ -257,6 +261,7 @@ public class InterpreterTest extends TestCase {
         } catch (Exception e) {
             //e.printStackTrace();
             fail("BinOpEqual threw " + e);
+
         }
     } //end of func
 
@@ -265,7 +270,10 @@ public class InterpreterTest extends TestCase {
         try {
             String output = "true";
             String input = " 5 != 6 ";
+
             allCheck("BinOpNonEqual", output, input );
+            valueCheck("NonEqualOp", output, input );
+
 
         } catch (Exception e) {
             //e.printStackTrace();
@@ -279,7 +287,6 @@ public class InterpreterTest extends TestCase {
             String output = "true";
             String input = " 5 < 6 ";
             allCheck("BinOpGreater", output, input );
-
         } catch (Exception e) {
             //e.printStackTrace();
             fail("BinOpGreater threw " + e);
@@ -342,9 +349,9 @@ public class InterpreterTest extends TestCase {
     public void testIf() {
         try {
             String output = "(1 2 3 1 2 3)";
-            String input = "let Y    := map f to let g := map x to f(map z1,z2 to (x(x))(z1,z2));     in g(g);  APPEND := map ap to            map x,y to               if x = null then y else cons(first(x), ap(rest(x), y)); l      := cons(1,cons(2,cons(3,null))); in (Y(APPEND))(l,l)";
-            allCheck("append", output, input);
 
+            String input = "let Y    := map f to              let g := map x to f(map z1,z2 to (x(x))(z1,z2));     in g(g);  APPEND := map ap to            map x,y to               if x = null then y else cons(first(x), ap(rest(x), y)); l      := cons(1,cons(2,cons(3,null))); in (Y(APPEND))(l,l)";
+            valueCheck("append", output, input);
         } catch (Exception e) {
             //e.printStackTrace();
             fail("append threw " + e);

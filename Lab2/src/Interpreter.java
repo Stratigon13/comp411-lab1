@@ -209,22 +209,25 @@ public class Interpreter {
     		}
 			@Override
 			public JamVal forBinOpApp(BinOpApp b) {
+				JamVal res = null;
     			final BinOp op = b.rator();
 				nextAST = b.arg1();
 
                 System.out.println("binary operator: " + op.toString());
 
+
 				final JamVal arg1Val = callByValue();
-				System.out.println("arg1: " + arg1Val.getClass().toString());
+				System.out.println("arg1: " + ((IntConstant) arg1Val).value());
 				nextAST = b.arg2();
 				final JamVal arg2Val = callByValue();
-				System.out.println("arg2: " + arg2Val.getClass().toString());
+				System.out.println("arg2: " + ((IntConstant) arg2Val).value());
+				System.out.println("op: " + op.name);
 				switch (op.name) {
 					case "+":
 					case "-":
 					case "*":
 					case "/":
-						arg1Val.accept(new JamValVisitor<IntConstant>() {
+						return arg1Val.accept(new JamValVisitor<IntConstant>() {
 							@Override
 							public IntConstant forBoolConstant(BoolConstant jb) {
 								throw new EvalException("binop " + op.toString() + " was given bool " + jb.toString());
@@ -262,7 +265,6 @@ public class Interpreter {
 								throw new EvalException("binop " + op.toString() + " was given list " + jl.toString());
 							}
 						});
-						break;
 					case "=":
 					case "!=":
 					case "<":
@@ -271,7 +273,7 @@ public class Interpreter {
 					case ">=":
 					case "&":
 					case "|":
-						arg1Val.accept(new JamValVisitor<BoolConstant>() {
+						return arg1Val.accept(new JamValVisitor<BoolConstant>() {
 							@Override
 							public BoolConstant forBoolConstant(BoolConstant jb) {
 								Boolean a = jb.value();
@@ -304,8 +306,10 @@ public class Interpreter {
 							@Override
 							public BoolConstant forIntConstant(IntConstant ji) {
 								int a = ji.value();
+								System.out.println("a"+a);
 								int b = ((IntConstant) arg2Val).value();
-								if (op.name == "="){
+								System.out.println("b"+b);
+								if (op.name == "="){		
 									if (a == b)
 										return BoolConstant.TRUE;
 									else
@@ -373,7 +377,6 @@ public class Interpreter {
 				default:
 					throw new EvalException("unrecognized op");
 				}
-				throw new EvalException("unreacheable code in binop app");
 			}
 			@Override
     		public JamVal forApp(App a){
