@@ -535,212 +535,212 @@ public class Interpreter {
 	}
 
     public JamVal callByName()  {
-        ASTVisitor<JamVal> valueVis = new ASTVisitor<JamVal>() {
-            @Override
-            public JamVal forBoolConstant(BoolConstant b) {
-                return (JamVal) b;
-            }
-
-            ;
-
-            @Override
-            public JamVal forIntConstant(IntConstant i) {
-                return (JamVal) i;
-            }
-
-            @Override
-            public JamVal forNullConstant(NullConstant n) {
-                return (JamList) JamEmpty.ONLY;
-            }
-
-            @Override
-            public JamVal forJamEmpty(JamEmpty je) {
-                return (JamList) JamEmpty.ONLY;
-            }
-
-            @Override
-            public JamVal forVariable(Variable v) {
-                //TODO
-                return (JamVal) JamEmpty.ONLY;
-            }
-
-            @Override
-            public JamVal forPrimFun(PrimFun f) {
-                final PrimFun ff = f;
-                return f.accept(new PrimFunVisitor<JamVal>() {
-                    @Override
-                    public JamVal forArityPrim() {
-                        //TODO
-                        return null;
-                    }
-
-                    @Override
-                    public JamVal forConsPPrim() {
-                        Boolean res = ff.accept(new JamValVisitor<Boolean>() {
-
-                            @Override
-                            public Boolean forIntConstant(IntConstant ji) {
-                                return false;
-                            }
-
-                            @Override
-                            public Boolean forBoolConstant(BoolConstant jb) {
-                                return false;
-                            }
-
-                            @Override
-                            public Boolean forJamList(JamList jl) {
-                                return !(jl.equals(JamEmpty.ONLY));
-                            }
-
-                            @Override
-                            public Boolean forJamFun(JamFun jf) {
-                                return false;
-                            }
-
-                        });
-                        if (res)
-                            return (JamVal) BoolConstant.TRUE;
-                        else
-                            return (JamVal) BoolConstant.FALSE;
-                    }
-
-                    @Override
-                    public JamVal forConsPrim() {
-                        //TODO
-                        return null;
-                    }
-
-                    @Override
-                    public JamVal forFirstPrim() {
-                        //TODO
-                        return null;
-                    }
-
-                    @Override
-                    public JamVal forFunctionPPrim() {
-                        //TODO
-                        return null;
-                    }
-
-                    @Override
-                    public JamVal forListPPrim() {
-                        ff.accept(new JamValVisitor<Boolean>() {
-
-                            @Override
-                            public Boolean forIntConstant(IntConstant ji) {
-                                return false;
-                            }
-
-                            @Override
-                            public Boolean forBoolConstant(BoolConstant jb) {
-                                return false;
-                            }
-
-                            @Override
-                            public Boolean forJamList(JamList jl) {
-                                return true;
-                            }
-
-                            @Override
-                            public Boolean forJamFun(JamFun jf) {
-                                return false;
-                            }
-
-                        });
-                        if (ff.equals(JamEmpty.ONLY)) {
-                            return true;
-                        }
-                        return null;
-                    }
-
-                    @Override
-                    public JamVal forNullPPrim() {
-                        Boolean res = ff.accept(new JamFunVisitor<Boolean>() {
-                            @Override
-                            public Boolean forJamClosure(JamClosure c) {
-                                return (c.env().accept(new PureListVisitor<Binding, Boolean>() {
-                                    @Override
-                                    public Boolean forEmpty(Empty<Binding> e) {
-                                        return true;
-                                    }
-
-                                    @Override
-                                    public Boolean forCons(Cons<Binding> c) {
-                                        return false;
-                                    }
-                                }));
-                            }
-
-                            @Override
-                            public Boolean forPrimFun(PrimFun pf) {
-                                throw new EvalException("null prim got to prim fun");
-                                //TODO?????
-                            }
-                        });
-                        if (res)
-                            return (JamVal) BoolConstant.TRUE;
-                        else
-                            return (JamVal) BoolConstant.FALSE;
-                    }
-
-                    @Override
-                    public JamVal forNumberPPrim() {
-                        //TODO
-                        return null;
-                    }
-
-                    @Override
-                    public JamVal forRestPrim() {
-                        //TODO
-                        return null;
-                    }
-                });
-            }
-
-            @Override
-            public JamVal forUnOpApp(UnOpApp u) {
-                final UnOp op = u.rator();
-                nextAST = u.arg();
-                JamVal argVal = callByValue();
-                argVal.accept(new JamValVisitor<Boolean>() {
-                    @Override
-                    public Boolean forBoolConstant(BoolConstant jb) {
-                        if (op.name == "/") {
-                            if (jb.value())
-                                return false;
-                            else
-                                return true;
-                        } else {
-                            throw new EvalException("unop got " + op.toString() + " on a boolean");
-                        }
-                    }
-
-                    @Override
-                    public Boolean forIntConstant(IntConstant ji) {
-                        if (op.name == "+") {
-                            return (ji.value() > 0);
-                        } else if (op.name == "-") {
-                            return (ji.value() < 0);
-                        } else {
-                            throw new EvalException("unop got " + op.toString() + "on an int");
-                        }
-                    }
-
-                    @Override
-                    public Boolean forJamFun(JamFun jf) {
-                        throw new EvalException("unop was given fun " + jf.toString());
-                    }
-
-                    @Override
-                    public Boolean forJamList(JamList jl) {
-                        throw new EvalException("unop was given list " + jl.toString());
-                    }
-                });
-                throw new EvalException("unreachable code in unop app");
-            }
-
-        }
+//        ASTVisitor<JamVal> valueVis = new ASTVisitor<JamVal>() {
+//            @Override
+//            public JamVal forBoolConstant(BoolConstant b) {
+//                return (JamVal) b;
+//            }
+//
+//            ;
+//
+//            @Override
+//            public JamVal forIntConstant(IntConstant i) {
+//                return (JamVal) i;
+//            }
+//
+//            @Override
+//            public JamVal forNullConstant(NullConstant n) {
+//                return (JamList) JamEmpty.ONLY;
+//            }
+//
+//            @Override
+//            public JamVal forJamEmpty(JamEmpty je) {
+//                return (JamList) JamEmpty.ONLY;
+//            }
+//
+//            @Override
+//            public JamVal forVariable(Variable v) {
+//                //TODO
+//                return (JamVal) JamEmpty.ONLY;
+//            }
+//
+//            @Override
+//            public JamVal forPrimFun(PrimFun f) {
+//                final PrimFun ff = f;
+//                return f.accept(new PrimFunVisitor<JamVal>() {
+//                    @Override
+//                    public JamVal forArityPrim() {
+//                        //TODO
+//                        return null;
+//                    }
+//
+//                    @Override
+//                    public JamVal forConsPPrim() {
+//                        Boolean res = ff.accept(new JamValVisitor<Boolean>() {
+//
+//                            @Override
+//                            public Boolean forIntConstant(IntConstant ji) {
+//                                return false;
+//                            }
+//
+//                            @Override
+//                            public Boolean forBoolConstant(BoolConstant jb) {
+//                                return false;
+//                            }
+//
+//                            @Override
+//                            public Boolean forJamList(JamList jl) {
+//                                return !(jl.equals(JamEmpty.ONLY));
+//                            }
+//
+//                            @Override
+//                            public Boolean forJamFun(JamFun jf) {
+//                                return false;
+//                            }
+//
+//                        });
+//                        if (res)
+//                            return (JamVal) BoolConstant.TRUE;
+//                        else
+//                            return (JamVal) BoolConstant.FALSE;
+//                    }
+//
+//                    @Override
+//                    public JamVal forConsPrim() {
+//                        //TODO
+//                        return null;
+//                    }
+//
+//                    @Override
+//                    public JamVal forFirstPrim() {
+//                        //TODO
+//                        return null;
+//                    }
+//
+//                    @Override
+//                    public JamVal forFunctionPPrim() {
+//                        //TODO
+//                        return null;
+//                    }
+//
+//                    @Override
+//                    public JamVal forListPPrim() {
+//                        ff.accept(new JamValVisitor<Boolean>() {
+//
+//                            @Override
+//                            public Boolean forIntConstant(IntConstant ji) {
+//                                return false;
+//                            }
+//
+//                            @Override
+//                            public Boolean forBoolConstant(BoolConstant jb) {
+//                                return false;
+//                            }
+//
+//                            @Override
+//                            public Boolean forJamList(JamList jl) {
+//                                return true;
+//                            }
+//
+//                            @Override
+//                            public Boolean forJamFun(JamFun jf) {
+//                                return false;
+//                            }
+//
+//                        });
+//                        if (ff.equals(JamEmpty.ONLY)) {
+//                            return true;
+//                        }
+//                        return null;
+//                    }
+//
+//                    @Override
+//                    public JamVal forNullPPrim() {
+//                        Boolean res = ff.accept(new JamFunVisitor<Boolean>() {
+//                            @Override
+//                            public Boolean forJamClosure(JamClosure c) {
+//                                return (c.env().accept(new PureListVisitor<Binding, Boolean>() {
+//                                    @Override
+//                                    public Boolean forEmpty(Empty<Binding> e) {
+//                                        return true;
+//                                    }
+//
+//                                    @Override
+//                                    public Boolean forCons(Cons<Binding> c) {
+//                                        return false;
+//                                    }
+//                                }));
+//                            }
+//
+//                            @Override
+//                            public Boolean forPrimFun(PrimFun pf) {
+//                                throw new EvalException("null prim got to prim fun");
+//                                //TODO?????
+//                            }
+//                        });
+//                        if (res)
+//                            return (JamVal) BoolConstant.TRUE;
+//                        else
+//                            return (JamVal) BoolConstant.FALSE;
+//                    }
+//
+//                    @Override
+//                    public JamVal forNumberPPrim() {
+//                        //TODO
+//                        return null;
+//                    }
+//
+//                    @Override
+//                    public JamVal forRestPrim() {
+//                        //TODO
+//                        return null;
+//                    }
+//                });
+//            }
+//
+//            @Override
+//            public JamVal forUnOpApp(UnOpApp u) {
+//                final UnOp op = u.rator();
+//                nextAST = u.arg();
+//                JamVal argVal = callByValue();
+//                argVal.accept(new JamValVisitor<Boolean>() {
+//                    @Override
+//                    public Boolean forBoolConstant(BoolConstant jb) {
+//                        if (op.name == "/") {
+//                            if (jb.value())
+//                                return false;
+//                            else
+//                                return true;
+//                        } else {
+//                            throw new EvalException("unop got " + op.toString() + " on a boolean");
+//                        }
+//                    }
+//
+//                    @Override
+//                    public Boolean forIntConstant(IntConstant ji) {
+//                        if (op.name == "+") {
+//                            return (ji.value() > 0);
+//                        } else if (op.name == "-") {
+//                            return (ji.value() < 0);
+//                        } else {
+//                            throw new EvalException("unop got " + op.toString() + "on an int");
+//                        }
+//                    }
+//
+//                    @Override
+//                    public Boolean forJamFun(JamFun jf) {
+//                        throw new EvalException("unop was given fun " + jf.toString());
+//                    }
+//
+//                    @Override
+//                    public Boolean forJamList(JamList jl) {
+//                        throw new EvalException("unop was given list " + jl.toString());
+//                    }
+//                });
+//                throw new EvalException("unreachable code in unop app");
+//            }
+//
+//        }
 
 
 
