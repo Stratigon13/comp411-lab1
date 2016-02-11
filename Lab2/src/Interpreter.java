@@ -8,6 +8,7 @@ import java.lang.String;
 
 public class Interpreter {
 
+	PureList<Binding> nextEnv = new Empty<Binding>();
 	AST nextAST = null;
 
     /** file Interpreter.java **/
@@ -71,27 +72,28 @@ public class Interpreter {
 
 					@Override
 					public JamVal forConsPPrim() {
-						Boolean res = ff.accept(new JamFunVisitor<Boolean>() {
-							@Override
-							public Boolean forJamClosure(JamClosure c) {
-								return c.env().accept(new PureListVisitor<Binding, Boolean>() {
-									@Override
-									public Boolean forEmpty(Empty<Binding> e) {
-										return false;
-									}
+						Boolean res = ff.accept(new JamValVisitor<Boolean>() {
 
-									@Override
-									public Boolean forCons(Cons<Binding> c) {
-										return true;
-									}
-								});
+							@Override
+							public Boolean forIntConstant(IntConstant ji) {
+								return false;
 							}
 
 							@Override
-							public Boolean forPrimFun(PrimFun pf) {
-								//TODO????
-								return pf.equals(ConsPPrim.ONLY);
+							public Boolean forBoolConstant(BoolConstant jb) {
+								return false;
 							}
+
+							@Override
+							public Boolean forJamList(JamList jl) {
+								return !(jl.equals(JamEmpty.ONLY));
+							}
+
+							@Override
+							public Boolean forJamFun(JamFun jf) {
+								return false;
+							}
+						
 						});
 						if (res)
 							return (JamVal) BoolConstant.TRUE;
@@ -119,7 +121,32 @@ public class Interpreter {
 
 					@Override
 					public JamVal forListPPrim() {
-						//TODO
+						ff.accept(new JamValVisitor<Boolean>(){
+
+							@Override
+							public Boolean forIntConstant(IntConstant ji) {
+								return false;
+							}
+
+							@Override
+							public Boolean forBoolConstant(BoolConstant jb) {
+								return false;
+							}
+
+							@Override
+							public Boolean forJamList(JamList jl) {
+								return true;
+							}
+
+							@Override
+							public Boolean forJamFun(JamFun jf) {
+								return false;
+							}
+							
+						});
+						if (ff.equals(JamEmpty.ONLY)){
+							return true;
+						}
 						return null;
 					}
 
@@ -380,9 +407,11 @@ public class Interpreter {
 			}
 			@Override
     		public JamVal forApp(App a){
-				JamList list = JamEmpty.ONLY;
+				JamList list = JamEmpty.ONLY;	
 				nextAST = a.rator();
+				System.out.println("Rator: "+a.rator().toString());
 				JamVal fac = callByValue();
+				System.out.println("Fac: "+fac.toString());
 				JamValVisitor<Integer> pullOutInt = new JamValVisitor<Integer>(){
 
 					@Override
@@ -414,10 +443,37 @@ public class Interpreter {
 				}
 				return (JamVal) list;
 			}
+			/*
+			 * Maps check if any variables are free and then substitute
+			 */
 			@Override
     		public JamVal forMap(Map m){
-				//TODO
-				return (JamVal) JamEmpty.ONLY;
+				for (int i = 0; i < m.vars().length; i++){
+					final int ii = i;
+					nextEnv.accept(new PureListVisitor<Binding,Boolean>(){
+
+						@Override
+						public Boolean forEmpty(Empty<Binding> e) {
+							throw new EvalException("empty bindings for vars:"+m.vars().toString());
+						}
+
+						@Override
+						public Boolean forCons(Cons<Binding> c) {
+							Cons<Binding> next = c;
+							while(!next.equals(c.empty())){
+								if (next.first.var.equals(m.vars()[ii])){
+									return true;
+								}
+								next = (Cons<Binding>) next.rest;
+							}
+							throw new EvalException("variable "+m.vars()[ii].toString()+" is not bounded.");
+						}
+						
+					});
+				}
+				m.body();
+				m.vars();
+				return null;
     		}
 			@Override
     		public JamVal forIf(If i){
@@ -464,7 +520,7 @@ public class Interpreter {
 					binds = binds.cons(new ValueBinding(defs[i].lhs(),rhs));
 				}
 				JamClosure closure = new JamClosure(new Map(new Variable[0],l.body()),binds);
-				//TODO
+				
 				return (JamVal) JamEmpty.ONLY;
 			}
 		};
