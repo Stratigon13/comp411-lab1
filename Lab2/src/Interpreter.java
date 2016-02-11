@@ -6,7 +6,10 @@ import java.lang.String;
  * Created by xiaozheng on 1/31/16.
  */
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 421520e1f0b3bb91d02fb4feae2c3afe388851ea
 public class Interpreter {
 
 	AST nextAST = null;
@@ -225,8 +228,10 @@ public class Interpreter {
 			public JamVal forBinOpApp(BinOpApp b) {
     			final BinOp op = b.rator();
 				nextAST = b.arg1();
+                System.out.println("arg1: " + nextAST.getClass().toString());
 				final JamVal arg1Val = callByValue();
 				nextAST = b.arg2();
+                System.out.println("arg2: " + nextAST.getClass().toString());
 				final JamVal arg2Val = callByValue();{
 				}
 				switch (op.name) {
