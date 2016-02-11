@@ -39,6 +39,7 @@ public class InterpreterTest extends TestCase {
         needCheck(name, answer, program);
     }
 
+<<<<<<< HEAD
     public void testIntConstant() {
         try {
             String output = "2";
@@ -60,6 +61,43 @@ public class InterpreterTest extends TestCase {
             fail("NullConstant threw " + e);
         }
     } //end of func
+=======
+    public void testBoolConst() {
+        try {
+            String output = "false";
+            String input = "false";
+            valueCheck("boolConst", output, input);
+
+        } catch (Exception e) {
+            //e.printStackTrace();
+            fail("boolConst threw " + e);
+        }
+    }
+    
+    public void testIntConst() {
+        try {
+            String output = "2";
+            String input = "2";
+            valueCheck("intConst", output, input);
+
+        } catch (Exception e) {
+            //e.printStackTrace();
+            fail("intConst threw " + e);
+        }
+    }
+    
+    public void testNullConst() {
+        try {
+            String output = "()";
+            String input = "null";
+            valueCheck("nullConst", output, input);
+
+        } catch (Exception e) {
+            //e.printStackTrace();
+            fail("nullConst threw " + e);
+        }
+    }
+>>>>>>> 27ab933cec6e707c9fb3fd0a0e074f7a6a246269
 
     public void testNumberP() {
         try {

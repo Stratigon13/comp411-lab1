@@ -40,36 +40,23 @@ public class Interpreter {
     	ASTVisitor<JamVal> valueVis = new ASTVisitor<JamVal>() {
 			@Override
 			public JamVal forBoolConstant(BoolConstant b) {
-				final BoolConstant bb = b;
-				JamVal result = new JamVal() {
-					@Override
-					public <JamVal> JamVal accept(JamValVisitor<JamVal> jvv) {
-						return bb.accept(jvv);
-					}
-				};
-				return result;
+				return (JamVal) b;
 			};
 			@Override
     		public JamVal forIntConstant(IntConstant i){
-				final IntConstant ii = i;
-				JamVal result = new JamVal() {
-					@Override
-					public <JamVal> JamVal accept(JamValVisitor<JamVal> jvv) {
-						return ii.accept(jvv);
-					}
-				};
-				return result;
+				return (JamVal) i;
 			}
 			@Override
     		public JamVal forNullConstant(NullConstant n){
-				return (JamVal) JamEmpty.ONLY;
+				return (JamList) JamEmpty.ONLY;
 			}
 			@Override
     		public JamVal forJamEmpty(JamEmpty je){
-				return (JamVal) JamEmpty.ONLY;
+				return (JamList) JamEmpty.ONLY;
 			}
 			@Override
 			public JamVal forVariable(Variable v){
+				//TODO
 				return (JamVal) JamEmpty.ONLY;
     		}
 			@Override
@@ -224,13 +211,16 @@ public class Interpreter {
 			public JamVal forBinOpApp(BinOpApp b) {
     			final BinOp op = b.rator();
 				nextAST = b.arg1();
+<<<<<<< HEAD
                 System.out.println("binary operator: " + op.toString());
                 System.out.println("arg1: " + nextAST.getClass().toString());
+=======
+>>>>>>> 27ab933cec6e707c9fb3fd0a0e074f7a6a246269
 				final JamVal arg1Val = callByValue();
+				System.out.println("arg1: " + arg1Val.getClass().toString());
 				nextAST = b.arg2();
-                System.out.println("arg2: " + nextAST.getClass().toString());
-				final JamVal arg2Val = callByValue();{
-				}
+				final JamVal arg2Val = callByValue();
+				System.out.println("arg2: " + arg2Val.getClass().toString());
 				switch (op.name) {
 					case "+":
 					case "-":
@@ -245,6 +235,7 @@ public class Interpreter {
 							@Override
 							public IntConstant forIntConstant(IntConstant ji) {
 								int a = ji.value();
+								System.err.println(arg2Val+":"+arg2Val.getClass().toString());
 								int b = ((IntConstant) arg2Val).value();
 								if (op.name == "+") {
 									return new IntConstant(a + b);
