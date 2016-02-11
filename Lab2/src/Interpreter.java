@@ -40,14 +40,7 @@ public class Interpreter {
     	ASTVisitor<JamVal> valueVis = new ASTVisitor<JamVal>() {
 			@Override
 			public JamVal forBoolConstant(BoolConstant b) {
-				final BoolConstant bb = b;
-				JamVal result = new JamVal() {
-					@Override
-					public <JamVal> JamVal accept(JamValVisitor<JamVal> jvv) {
-						return bb.accept(jvv);
-					}
-				};
-				return result;
+				return (JamVal) b;
 			};
 			@Override
     		public JamVal forIntConstant(IntConstant i){
@@ -55,14 +48,15 @@ public class Interpreter {
 			}
 			@Override
     		public JamVal forNullConstant(NullConstant n){
-				return (JamVal) JamEmpty.ONLY;
+				return (JamList) JamEmpty.ONLY;
 			}
 			@Override
     		public JamVal forJamEmpty(JamEmpty je){
-				return (JamVal) JamEmpty.ONLY;
+				return (JamList) JamEmpty.ONLY;
 			}
 			@Override
 			public JamVal forVariable(Variable v){
+				//TODO
 				return (JamVal) JamEmpty.ONLY;
     		}
 			@Override

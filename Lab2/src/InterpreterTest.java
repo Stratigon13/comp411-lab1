@@ -39,6 +39,42 @@ public class InterpreterTest extends TestCase {
         needCheck(name, answer, program);
     }
 
+    public void testBoolConst() {
+        try {
+            String output = "false";
+            String input = "false";
+            valueCheck("boolConst", output, input);
+
+        } catch (Exception e) {
+            //e.printStackTrace();
+            fail("boolConst threw " + e);
+        }
+    }
+    
+    public void testIntConst() {
+        try {
+            String output = "2";
+            String input = "2";
+            valueCheck("intConst", output, input);
+
+        } catch (Exception e) {
+            //e.printStackTrace();
+            fail("intConst threw " + e);
+        }
+    }
+    
+    public void testNullConst() {
+        try {
+            String output = "()";
+            String input = "null";
+            valueCheck("nullConst", output, input);
+
+        } catch (Exception e) {
+            //e.printStackTrace();
+            fail("nullConst threw " + e);
+        }
+    }
+
     public void testNumberP() {
         try {
             String output = "number?";
