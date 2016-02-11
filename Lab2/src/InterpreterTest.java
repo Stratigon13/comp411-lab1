@@ -39,7 +39,7 @@ public class InterpreterTest extends TestCase {
         needCheck(name, answer, program);
     }
 
-    public void testBoolConst() {
+    public void testBoolConstant() {
         try {
             String output = "false";
             String input = "false";
@@ -51,7 +51,7 @@ public class InterpreterTest extends TestCase {
         }
     }
     
-    public void testIntConst() {
+    public void testIntConstant() {
         try {
             String output = "2";
             String input = "2";
@@ -63,7 +63,7 @@ public class InterpreterTest extends TestCase {
         }
     }
     
-    public void testNullConst() {
+    public void testNullConstant() {
         try {
             String output = "()";
             String input = "null";
@@ -74,6 +74,7 @@ public class InterpreterTest extends TestCase {
             fail("nullConst threw " + e);
         }
     }
+
 
     public void testNumberP() {
         try {
@@ -158,7 +159,7 @@ public class InterpreterTest extends TestCase {
         try {
             String output = "18";
             String input = "2 * 3 + 12";
-            allCheck("mathOp2", output, input );
+            allCheck("mathOp2", output, input);
 
         } catch (Exception e) {
             //e.printStackTrace();
@@ -166,12 +167,13 @@ public class InterpreterTest extends TestCase {
         }
     } //end of func
 
-
     public void testBinOpEqual() {
         try {
+
             String output = "true";
             String input = "5=5";
             valueCheck("binOp", output, input );
+
 
         } catch (Exception e) {
             //e.printStackTrace();
@@ -179,6 +181,41 @@ public class InterpreterTest extends TestCase {
         }
     } //end of func
 
+    public void testBinOpNonEqual() {
+        try {
+            String output = "True";
+            String input = " 5 != 6 ";
+            allCheck("NonEqualOp", output, input );
+
+        } catch (Exception e) {
+            //e.printStackTrace();
+            fail("NonEqualOp threw " + e);
+        }
+    }
+
+    public void testBinOpGreater() {
+        try {
+            String output = "True";
+            String input = " 5 < 6 ";
+            allCheck("NonEqualOp", output, input );
+
+        } catch (Exception e) {
+            //e.printStackTrace();
+            fail("NonEqualOp threw " + e);
+        }
+    }
+
+    public void testBinOpLesser() {
+        try {
+            String output = "False";
+            String input = " 5 > 6 ";
+            allCheck("NonEqualOp", output, input );
+
+        } catch (Exception e) {
+            //e.printStackTrace();
+            fail("NonEqualOp threw " + e);
+        }
+    }
 
 
     public void testAppend() {
@@ -270,6 +307,14 @@ public class InterpreterTest extends TestCase {
             fail("append threw " + e);
         }
     }
+
+//    public void () {
+//        try {
+//
+//        } catch () {
+//
+//        }
+//    }
 
 
 }
