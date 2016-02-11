@@ -6,10 +6,6 @@ import java.lang.String;
  * Created by xiaozheng on 1/31/16.
  */
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 421520e1f0b3bb91d02fb4feae2c3afe388851ea
 public class Interpreter {
 
 	AST nextAST = null;
@@ -55,14 +51,7 @@ public class Interpreter {
 			};
 			@Override
     		public JamVal forIntConstant(IntConstant i){
-				final IntConstant ii = i;
-				JamVal result = new JamVal() {
-					@Override
-					public <JamVal> JamVal accept(JamValVisitor<JamVal> jvv) {
-						return ii.accept(jvv);
-					}
-				};
-				return result;
+				return (JamVal) i;
 			}
 			@Override
     		public JamVal forNullConstant(NullConstant n){
@@ -228,12 +217,11 @@ public class Interpreter {
 			public JamVal forBinOpApp(BinOpApp b) {
     			final BinOp op = b.rator();
 				nextAST = b.arg1();
-                System.out.println("arg1: " + nextAST.getClass().toString());
 				final JamVal arg1Val = callByValue();
+				System.out.println("arg1: " + arg1Val.getClass().toString());
 				nextAST = b.arg2();
-                System.out.println("arg2: " + nextAST.getClass().toString());
-				final JamVal arg2Val = callByValue();{
-				}
+				final JamVal arg2Val = callByValue();
+				System.out.println("arg2: " + arg2Val.getClass().toString());
 				switch (op.name) {
 					case "+":
 					case "-":
@@ -248,6 +236,7 @@ public class Interpreter {
 							@Override
 							public IntConstant forIntConstant(IntConstant ji) {
 								int a = ji.value();
+								System.err.println(arg2Val+":"+arg2Val.getClass().toString());
 								int b = ((IntConstant) arg2Val).value();
 								if (op.name == "+") {
 									return new IntConstant(a + b);
