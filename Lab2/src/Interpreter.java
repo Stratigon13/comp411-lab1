@@ -250,6 +250,7 @@ public class Interpreter {
 				System.out.println("arg2: " + ((IntConstant) arg2Val).value());
 				System.out.println("op: " + op.name);
 				switch (op.name) {
+				// Integer Operators
 					case "+":
 					case "-":
 					case "*":
@@ -292,12 +293,14 @@ public class Interpreter {
 								throw new EvalException("binop " + op.toString() + " was given list " + jl.toString());
 							}
 						});
+					// Boolean & Integer Operators
 					case "=":
 					case "!=":
 					case "<":
 					case "<=":
 					case ">":
 					case ">=":
+					// Boolean Operators
 					case "&":
 					case "|":
 						return arg1Val.accept(new JamValVisitor<BoolConstant>() {
