@@ -8,20 +8,8 @@ README for Comp 411, Project 02.
 1. Outlines of the organization of my program:
    We wrote three functions callByValue(), callByName(), and callByNeed() in our interpreter functions. callByValue()
 function is suppose to pass in all the parameters by the value any directly evaluated them. callByName function is suppose
-to pass in all the parameters by its reference.
+to pass in all the parameters by its reference and calculate the results.
 
-
-   We decided to adhere to a more procedural paradigm as opposed to a more
-object-oriented approach to construct the parse functions.  We wrote five
-parse methods, parse(), parseExp(), parseFactor(), parseTerm(), and
-parseArgs().  In our parse() method, we simply call the parseExp() method to
-parse the incoming string and check that this exhausts the tokens in the lexer.
-The parse() method is the only public method so the user of the Parser simply
-calls parse(). parseExp() is called recursively in each of the four forms an
-Exp can take, and if parseExp() encounters a Token indicating that the input is
-a Term then parseTerm() is called.  We completed parseTerm() by writing the
-methods parseFactor() which returns an AST representing the input Factor and
-parseArgs() which returns an array of ASTs representing Exps.
 
 
 2. The testing Process our team has used to confirm the correctness of our program:

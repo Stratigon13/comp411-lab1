@@ -82,8 +82,8 @@ public class InterpreterTest extends TestCase {
 
     public void testUnopMinus() {
         try {
-            String output = " - 3";
-            String input = " - 3";
+            String output = " 2";
+            String input = " -3 + 5";
             allCheck("UnopMinus", output, input);
 
         } catch (Exception e) {
@@ -92,13 +92,26 @@ public class InterpreterTest extends TestCase {
         }
     }
 
+    public void testUnopPlus() {
+        try {
+            String output = "7";
+            String input = "+5+2";
+            allCheck("UnopPlus", output, input);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("UnopPlus threw " + e);
+        }
+
+    }
+
 
 
     @Test
     public void testConsP() {
         try {
-            String output = "cons?";
-            String input = "cons?";
+            String output = "true";
+            String input = "cons?(null(null))";
             valueCheck("cons?", output, input);
             //allCheck("conP", output, input);
 
@@ -124,8 +137,8 @@ public class InterpreterTest extends TestCase {
     @Test
     public void testNumberP() {
         try {
-            String output = "number?";
-            String input = "number?";
+            String output = "true";
+            String input = "number?(5)";
             allCheck("numberP", output, input);
 
         } catch (Exception e) {
@@ -151,8 +164,8 @@ public class InterpreterTest extends TestCase {
     public void testArityP() {
         try {
 
-            String output = "arity";
-            String input = "arity";
+            String output = "1";
+            String input = "arity(abs(x))";
             valueCheck("arity", output, input);
 
         } catch (Exception e) {
@@ -162,15 +175,27 @@ public class InterpreterTest extends TestCase {
     }
 
 
+//    @Test
+//    public void testListP() {
+//        try {
+//            String output = "list?";
+//            String input = "list?";
+//            //allCheck("listP", output, input);
+//
+//            valueCheck("nullP", output, input);
+//
+//        } catch (Exception e) {
+//            //e.printStackTrace();
+//            fail("listP threw " + e);
+//        }
+//    }
+
     @Test
     public void testListP() {
         try {
-            String output = "list?";
-            String input = "list?";
-            //allCheck("listP", output, input);
-
-            valueCheck("nullP", output, input);
-
+            String output = "true";
+            String input = "list?((1,2,3))";
+            allCheck("list", output, input);
         } catch (Exception e) {
             //e.printStackTrace();
             fail("listP threw " + e);
@@ -178,14 +203,14 @@ public class InterpreterTest extends TestCase {
     }
 
     @Test
-    public void testList() {
+    public void testConsF() {
         try {
-            String output = "list";
-            String input = "list";
-            allCheck("list", output, input);
+            String output = "(5, (null))";
+            String input = "cons(5,null)";
+            allCheck("cons", output, input);
         } catch (Exception e) {
             //e.printStackTrace();
-            fail("listP threw " + e);
+            fail("cons threw " + e);
         }
     }
 
@@ -194,8 +219,8 @@ public class InterpreterTest extends TestCase {
     @Test
     public void testFirst() {
         try {
-            String output = "first";
-            String input = "first";
+            String output = "1";
+            String input = "first((1,2,3))";
             //allCheck("first", output, input);
 
         } catch (Exception e) {
@@ -207,8 +232,8 @@ public class InterpreterTest extends TestCase {
     @Test
     public void testRest() {
         try {
-            String output = "rest";
-            String input = "rest";
+            String output = "(2,3)";
+            String input = "rest((1,2,3))";
             allCheck("Rest", output, input);
 
         } catch (Exception e) {
@@ -347,9 +372,9 @@ public class InterpreterTest extends TestCase {
     @Test
     public void testIf() {
         try {
-            String output = "11";
+            String output = "8";
 
-            String input = "if x = 5 + 6 then 8 else 3 + 4";
+            String input = "if 11 = 5 + 6 then 8 else 3 + 4";
             valueCheck("if", output, input);
         } catch (Exception e) {
             //e.printStackTrace();
