@@ -169,13 +169,13 @@ public class InterpreterTest extends TestCase {
 
     public void testBinOpEqual() {
         try {
-            String output = "True";
+            String output = "true";
             String input = "5=5";
-            allCheck("mathOp", output, input );
+            valueCheck("binOp", output, input );
 
         } catch (Exception e) {
             //e.printStackTrace();
-            fail("mathOp2 threw " + e);
+            fail("binOp threw " + e);
         }
     } //end of func
 
