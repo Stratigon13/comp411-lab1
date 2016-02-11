@@ -1,6 +1,6 @@
-import java.util.StringTokenizer;
 import junit.framework.TestCase;
-import java.io.*;
+
+import java.io.StringReader;
 
 
 public class Assign2Test extends TestCase {
@@ -38,8 +38,6 @@ public class Assign2Test extends TestCase {
         nameCheck(name, answer, program);
         needCheck(name, answer, program);
     }
-
-
 
     public void testNumberP() {
         try {

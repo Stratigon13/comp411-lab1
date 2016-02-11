@@ -474,6 +474,8 @@ public class Interpreter {
 
     public JamVal callByName()  {
     	//TODO
+
+
     	return (JamVal) JamEmpty.ONLY;
     }
     public JamVal callByNeed()  {
