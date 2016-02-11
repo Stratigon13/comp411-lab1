@@ -211,11 +211,9 @@ public class Interpreter {
 			public JamVal forBinOpApp(BinOpApp b) {
     			final BinOp op = b.rator();
 				nextAST = b.arg1();
-<<<<<<< HEAD
+
                 System.out.println("binary operator: " + op.toString());
-                System.out.println("arg1: " + nextAST.getClass().toString());
-=======
->>>>>>> 27ab933cec6e707c9fb3fd0a0e074f7a6a246269
+
 				final JamVal arg1Val = callByValue();
 				System.out.println("arg1: " + arg1Val.getClass().toString());
 				nextAST = b.arg2();
@@ -341,6 +339,7 @@ public class Interpreter {
 									throw new EvalException("binop " + op.toString() + " was given int " + ji.toString());
 								}
 							}
+
 							@Override
 							public BoolConstant forJamFun(JamFun jf) {
 								int a = jf.hashCode();

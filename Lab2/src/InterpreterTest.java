@@ -1,5 +1,5 @@
 import junit.framework.TestCase;
-
+import org.junit.Test;
 
 import java.io.StringReader;
 
@@ -39,7 +39,7 @@ public class InterpreterTest extends TestCase {
         needCheck(name, answer, program);
     }
 
-<<<<<<< HEAD
+    @Test
     public void testIntConstant() {
         try {
             String output = "2";
@@ -49,8 +49,11 @@ public class InterpreterTest extends TestCase {
             //e.printStackTrace();
             fail("IntConstant threw " + e);
         }
+
+
     } //end of func
 
+    @Test
     public void testNullConstant() {
         try {
             String output = "()";
@@ -61,7 +64,8 @@ public class InterpreterTest extends TestCase {
             fail("NullConstant threw " + e);
         }
     } //end of func
-=======
+
+    @Test
     public void testBoolConst() {
         try {
             String output = "false";
@@ -73,32 +77,50 @@ public class InterpreterTest extends TestCase {
             fail("boolConst threw " + e);
         }
     }
-    
-    public void testIntConst() {
+
+
+//    @Test
+//    public void testNullP() {
+//        try {
+//            String output = "null?";
+//            String input = "null?";
+//            valueCheck("nullP", output, input);
+//
+//        } catch (Exception e) {
+//            //e.printStackTrace();
+//            fail("nullP threw " + e);
+//        }
+//    }
+
+
+    @Test
+    public void testConsP() {
         try {
-            String output = "2";
-            String input = "2";
-            valueCheck("intConst", output, input);
+            String output = "con?";
+            String input = "con?";
+            valueCheck("append", output, input);
+            //allCheck("conP", output, input);
 
         } catch (Exception e) {
             //e.printStackTrace();
-            fail("intConst threw " + e);
+            fail("append threw " + e);
         }
-    }
-    
-    public void testNullConst() {
+    } //end of func
+
+    @Test
+    public void testNullP() {
         try {
-            String output = "()";
-            String input = "null";
-            valueCheck("nullConst", output, input);
+            String output = "null?";
+            String input = "null?";
+            //allCheck("nullP", output, input);
 
         } catch (Exception e) {
             //e.printStackTrace();
-            fail("nullConst threw " + e);
+            fail("nullP threw " + e);
         }
     }
->>>>>>> 27ab933cec6e707c9fb3fd0a0e074f7a6a246269
 
+    @Test
     public void testNumberP() {
         try {
             String output = "number?";
@@ -111,11 +133,12 @@ public class InterpreterTest extends TestCase {
         }
     } //end of func
 
+    @Test
     public void testFunctionP() {
         try {
             String output = "function?";
             String input = "function?";
-            allCheck("functionP", output, input);
+            //allCheck("functionP", output, input);
 
         } catch (Exception e) {
             //e.printStackTrace();
@@ -123,24 +146,12 @@ public class InterpreterTest extends TestCase {
         }
     } //end of func
 
-    public void testConsP() {
+    @Test
+    public void testArityP() {
         try {
-            String output = "con?";
-            String input = "con?";
-            valueCheck("append", output, input);
-            //allCheck("conP", output, input);
-
-        } catch (Exception e) {
-            //e.printStackTrace();
-            fail("functionP threw " + e);
-        }
-    } //end of func
-
-    public void testNullP() {
-        try {
-            String output = "null?";
-            String input = "null?";
-            allCheck("nullP", output, input);
+            String output = "arity";
+            String input = "arity";
+            //allCheck("nullP", output, input);
 
         } catch (Exception e) {
             //e.printStackTrace();
@@ -148,11 +159,13 @@ public class InterpreterTest extends TestCase {
         }
     }
 
-    public void testlistP() {
+
+    @Test
+    public void testListP() {
         try {
             String output = "list?";
             String input = "list?";
-            allCheck("listP", output, input);
+            //allCheck("listP", output, input);
 
         } catch (Exception e) {
             //e.printStackTrace();
@@ -160,6 +173,49 @@ public class InterpreterTest extends TestCase {
         }
     }
 
+    @Test
+    public void testList() {
+        try {
+            String output = "list";
+            String input = "list";
+            allCheck("list", output, input);
+
+        } catch (Exception e) {
+            //e.printStackTrace();
+            fail("listP threw " + e);
+        }
+    }
+
+
+
+    @Test
+    public void testFirst() {
+        try {
+            String output = "first";
+            String input = "first";
+            //allCheck("first", output, input);
+
+        } catch (Exception e) {
+            //e.printStackTrace();
+            fail("Rest threw " + e);
+        }
+    }
+
+    @Test
+    public void testRest() {
+        try {
+            String output = "rest";
+            String input = "rest";
+            allCheck("Rest", output, input);
+
+        } catch (Exception e) {
+            //e.printStackTrace();
+            fail("Rest threw " + e);
+        }
+    }
+
+
+    @Test
     public void testMathOp1() {
         try {
             String output = "0";
@@ -178,6 +234,7 @@ public class InterpreterTest extends TestCase {
         }
     }
 
+    @Test
     public void testMathOp2() {
         try {
             String output = "18";
@@ -190,67 +247,112 @@ public class InterpreterTest extends TestCase {
         }
     } //end of func
 
+    @Test
     public void testBinOpEqual() {
         try {
-            String output = "True";
+            String output = "true";
             String input = " 5 = 5 ";
-            allCheck("mathOp", output, input );
+            allCheck("BinOpEqual", output, input );
 
         } catch (Exception e) {
             //e.printStackTrace();
-            fail("mathOp2 threw " + e);
+            fail("BinOpEqual threw " + e);
         }
     } //end of func
 
+    @Test
     public void testBinOpNonEqual() {
         try {
-            String output = "True";
+            String output = "true";
             String input = " 5 != 6 ";
-            allCheck("NonEqualOp", output, input );
+            allCheck("BinOpNonEqual", output, input );
 
         } catch (Exception e) {
             //e.printStackTrace();
-            fail("NonEqualOp threw " + e);
+            fail("BinOpNonEqual threw " + e);
         }
     }
 
+    @Test
     public void testBinOpGreater() {
         try {
-            String output = "True";
+            String output = "true";
             String input = " 5 < 6 ";
-            allCheck("NonEqualOp", output, input );
+            allCheck("BinOpGreater", output, input );
 
         } catch (Exception e) {
             //e.printStackTrace();
-            fail("NonEqualOp threw " + e);
+            fail("BinOpGreater threw " + e);
         }
     }
 
+    @Test
     public void testBinOpLesser() {
         try {
-            String output = "False";
+            String output = "false";
             String input = " 5 > 6 ";
-            allCheck("NonEqualOp", output, input );
+            allCheck("BinOpLesser", output, input );
 
         } catch (Exception e) {
             //e.printStackTrace();
-            fail("NonEqualOp threw " + e);
+            fail("BinOpLesser threw " + e);
         }
     }
 
+    @Test
+    public void testBinAnd() {
+        try {
+            String output = "false";
+            String input = " true & false";
+            allCheck("BinAnd", output, input );
 
+        } catch (Exception e) {
+            //e.printStackTrace();
+            fail("BinAnd threw " + e);
+        }
+    }
+
+    @Test
+    public void testBinOr() {
+        try {
+            String output = "true";
+            String input = " true | false";
+            allCheck("BinOr", output, input );
+
+        } catch (Exception e) {
+            //e.printStackTrace();
+            fail("BinOr threw " + e);
+        }
+    }
+
+    @Test
     public void testAppend() {
         try {
+            String output = "if x = 11 then 3 + 2 else 5 + 1";
+            String input = "if x = 3 + 8 then 3 + 2 else 5 + 1";
+            allCheck("If", output, input);
+
+        } catch (Exception e) {
+            //e.printStackTrace();
+            fail("If threw " + e);
+        }
+    } //end of func
+
+    @Test
+    public void testIf() {
+        try {
             String output = "(1 2 3 1 2 3)";
-            String input = "let Y    := map f to              let g := map x to f(map z1,z2 to (x(x))(z1,z2));     in g(g);  APPEND := map ap to            map x,y to               if x = null then y else cons(first(x), ap(rest(x), y)); l      := cons(1,cons(2,cons(3,null))); in (Y(APPEND))(l,l)";
+            String input = "let Y    := map f to let g := map x to f(map z1,z2 to (x(x))(z1,z2));     in g(g);  APPEND := map ap to            map x,y to               if x = null then y else cons(first(x), ap(rest(x), y)); l      := cons(1,cons(2,cons(3,null))); in (Y(APPEND))(l,l)";
             allCheck("append", output, input);
 
         } catch (Exception e) {
             //e.printStackTrace();
             fail("append threw " + e);
         }
-    } //end of func
 
+    }
+
+    @Test
     public void testIn1_Value() {
         try {
             String output = "6";
@@ -271,6 +373,7 @@ public class InterpreterTest extends TestCase {
         }
     } //end of func
 
+    @Test
     public void testIn2_Value() {
         try {
             String output = "(1 2 3 1 2 3)";
@@ -290,6 +393,7 @@ public class InterpreterTest extends TestCase {
         }
     }
 
+    @Test
     public void testIn1_Name() {
         try {
             String output = "6";
@@ -308,7 +412,7 @@ public class InterpreterTest extends TestCase {
         }
     }
 
-
+    @Test
     public void testIn2_Name() {
         try {
             String output = "(1 2 3 1 2 3)";
@@ -329,13 +433,7 @@ public class InterpreterTest extends TestCase {
         }
     }
 
-//    public void () {
-//        try {
-//
-//        } catch () {
-//
-//        }
-//    }
+
 
 
 }
