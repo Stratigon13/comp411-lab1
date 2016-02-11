@@ -7,8 +7,6 @@ import java.lang.String;
  */
 
 
-
-
 public class Interpreter {
 
 	AST nextAST = null;
@@ -21,6 +19,12 @@ public class Interpreter {
 		private static final long serialVersionUID = 5213575105993689031L;
 
 		EvalException(String msg) { super(msg); }
+    }
+    
+    class ValueBinding extends Binding{
+    	public ValueBinding(Variable variable, JamVal val) {
+    		super(variable, val);
+    	}
     }
 
     Interpreter(String fileName) throws IOException{
@@ -381,8 +385,39 @@ public class Interpreter {
 			}
 			@Override
     		public JamVal forApp(App a){
-				//TODO
-				return (JamVal) JamEmpty.ONLY;
+				JamList list = JamEmpty.ONLY;
+				nextAST = a.rator();
+				JamVal fac = callByValue();
+				JamValVisitor<Integer> pullOutInt = new JamValVisitor<Integer>(){
+
+					@Override
+					public Integer forIntConstant(IntConstant ji) {
+						return ji.value();
+					}
+
+					@Override
+					public Integer forBoolConstant(BoolConstant jb) {
+						throw new EvalException("Expected int in list: "+jb.toString());
+					}
+
+					@Override
+					public Integer forJamList(JamList jl) {
+						throw new EvalException("Expected int in list: "+jl.toString());
+					}
+
+					@Override
+					public Integer forJamFun(JamFun jf) {
+						throw new EvalException("Expected int in list: "+jf.toString());
+					}
+					
+				};
+				int facVal = fac.accept(pullOutInt);
+				for (int i = 1; i <= a.args().length; i++){
+					nextAST = a.args()[a.args().length-i];
+					JamVal res = callByValue();
+					list.cons((JamVal)new IntConstant(facVal*res.accept(pullOutInt)));
+				}
+				return (JamVal) list;
 			}
 			@Override
     		public JamVal forMap(Map m){
@@ -424,6 +459,16 @@ public class Interpreter {
 			}
 			@Override
     		public JamVal forLet(Let l){
+				
+				Def[] defs = l.defs();
+				PureList<Binding> binds = new Empty<Binding>();
+				for (int i = 1; i <= defs.length; i++) {
+					
+					nextAST = defs[defs.length-i].rhs();
+					JamVal rhs = callByValue();
+					binds = binds.cons(new ValueBinding(defs[i].lhs(),rhs));
+				}
+				JamClosure closure = new JamClosure(new Map(new Variable[0],l.body()),binds);
 				//TODO
 				return (JamVal) JamEmpty.ONLY;
 			}
