@@ -80,40 +80,39 @@ public class InterpreterTest extends TestCase {
     }
 
 
+    public void testUnopMinus() {
+        try {
+            String output = " - 3";
+            String input = " - 3";
+            allCheck("UnopMinus", output, input);
 
-//    @Test
-//    public void testNullP() {
-//        try {
-//            String output = "null?";
-//            String input = "null?";
-//            valueCheck("nullP", output, input);
-//
-//        } catch (Exception e) {
-//            //e.printStackTrace();
-//            fail("nullP threw " + e);
-//        }
-//    }
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("UnopMinus threw " + e);
+        }
+    }
+
 
 
     @Test
     public void testConsP() {
         try {
-            String output = "con?";
-            String input = "con?";
-            valueCheck("append", output, input);
+            String output = "cons?";
+            String input = "cons?";
+            valueCheck("cons?", output, input);
             //allCheck("conP", output, input);
 
         } catch (Exception e) {
             //e.printStackTrace();
-            fail("append threw " + e);
+            fail("cons? threw " + e);
         }
     } //end of func
 
     @Test
     public void testNullP() {
         try {
-            String output = "null?";
-            String input = "null?";
+            String output = "true";
+            String input = "null?(null)";
             //allCheck("nullP", output, input);
 
         } catch (Exception e) {
@@ -138,8 +137,8 @@ public class InterpreterTest extends TestCase {
     @Test
     public void testFunctionP() {
         try {
-            String output = "function?";
-            String input = "function?";
+            String output = "true";
+            String input = "function?(cons?)";
             //allCheck("functionP", output, input);
 
         } catch (Exception e) {
@@ -335,26 +334,26 @@ public class InterpreterTest extends TestCase {
     @Test
     public void testAppend() {
         try {
-            String output = "if x = 11 then 3 + 2 else 5 + 1";
-            String input = "if x = 3 + 8 then 3 + 2 else 5 + 1";
-            allCheck("If", output, input);
+            String output = "(1 2 3 1 2 3)";
+            String input = "let Y    := map f to              let g := map x to f(map z1,z2 to (x(x))(z1,z2));     in g(g);  APPEND := map ap to            map x,y to               if x = null then y else cons(first(x), ap(rest(x), y)); l      := cons(1,cons(2,cons(3,null))); in (Y(APPEND))(l,l)";
+            allCheck("append", output, input);
 
         } catch (Exception e) {
             //e.printStackTrace();
-            fail("If threw " + e);
+            fail("append threw " + e);
         }
     } //end of func
 
     @Test
     public void testIf() {
         try {
-            String output = "(1 2 3 1 2 3)";
+            String output = "11";
 
-            String input = "let Y    := map f to              let g := map x to f(map z1,z2 to (x(x))(z1,z2));     in g(g);  APPEND := map ap to            map x,y to               if x = null then y else cons(first(x), ap(rest(x), y)); l      := cons(1,cons(2,cons(3,null))); in (Y(APPEND))(l,l)";
-            valueCheck("append", output, input);
+            String input = "if x = 5 + 6 then 8 else 3 + 4";
+            valueCheck("if", output, input);
         } catch (Exception e) {
             //e.printStackTrace();
-            fail("append threw " + e);
+            fail("if threw " + e);
         }
 
     }
