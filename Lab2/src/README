@@ -5,26 +5,17 @@ Applying Slip Day: 1 Day
 
 README for Comp 411, Project 02.
 
-1. Outlines of the organization of my program:
-   We wrote three functions callByValue(), callByName(), and callByNeed() in our interpreter functions. callByValue()
-function is suppose to pass in all the parameters by the value any directly evaluated them. callByName function is suppose
-to pass in all the parameters by its reference.
-
-
-   We decided to adhere to a more procedural paradigm as opposed to a more
-object-oriented approach to construct the parse functions.  We wrote five
-parse methods, parse(), parseExp(), parseFactor(), parseTerm(), and
-parseArgs().  In our parse() method, we simply call the parseExp() method to
-parse the incoming string and check that this exhausts the tokens in the lexer.
-The parse() method is the only public method so the user of the Parser simply
-calls parse(). parseExp() is called recursively in each of the four forms an
-Exp can take, and if parseExp() encounters a Token indicating that the input is
-a Term then parseTerm() is called.  We completed parseTerm() by writing the
-methods parseFactor() which returns an AST representing the input Factor and
-parseArgs() which returns an array of ASTs representing Exps.
-
-
-2. The testing Process our team has used to confirm the correctness of our program:
-   We wrote test cases for each method in order to test the correctness of our
-program. In addition, we ran each provided test case and checked that our
-interpreter failed only on bad inputs.
+	1. We wrote one of the three required functions callByValue(),
+callByName(), and callByNeed().  We used an ASTVisitor to return a JamVal from
+the AST which the parser provided.  We found difficulty in implementing some
+of the most crucial aspects of the interpreter, namely map, apply, and let. We
+tried several techniques for interpreting these expressions, but ultimately
+did not find a satisfactory solution.  As I consider this the main goal of
+the project, I hope we can still gain some partial work from the code we
+wrote.  The reason we did not complete callByName() or callByNeed() is because
+these functions differ from callByValue in the application of closures and the
+implementation of the three AST types I mentioned earlier.
+   
+	2. We tested several simple operations but unfortunately due to time
+constraints were largely unsuccessful in completing the task.  On the next
+project we will manage our time more wisely.
