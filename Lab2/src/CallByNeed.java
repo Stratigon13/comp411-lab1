@@ -23,7 +23,7 @@ class CallByNeed implements CallByInterface {
 
     @Override
     public JamVal lookup(PureList<Binding> env, Variable v) {
-        return env.accept(new PureListLookupVisitor(v));
+        return (JamVal)env.accept(new PureListLookupVisitor(v));
     }
 
     @Override
