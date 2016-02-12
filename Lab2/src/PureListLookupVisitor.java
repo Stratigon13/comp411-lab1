@@ -4,6 +4,7 @@
 public class PureListLookupVisitor {
     PureListLookupVisitor(Variable v){
 
+
     }
 
 }
