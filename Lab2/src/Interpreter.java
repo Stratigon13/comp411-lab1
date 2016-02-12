@@ -10,16 +10,6 @@ public class Interpreter {
 
 	PureList<Binding> nextEnv = new Empty<Binding>();
 	AST nextAST = null;
-
-    /** file Interpreter.java **/
-    class EvalException extends RuntimeException {
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 5213575105993689031L;
-
-		EvalException(String msg) { super(msg); }
-    }
     
     class ValueBinding extends Binding{
     	public ValueBinding(Variable variable, JamVal val) {
@@ -589,7 +579,7 @@ public class Interpreter {
     }
 
     public JamVal callByNeed()  {
-       
+
 
 
     	return (JamVal) JamEmpty.ONLY;

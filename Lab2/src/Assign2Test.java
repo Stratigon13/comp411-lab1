@@ -89,7 +89,7 @@ public class Assign2Test extends TestCase {
             allCheck("evalException", output, input );
 
             fail("evalException did not throw EvalException exception");
-        } catch (Interpreter.EvalException e) {
+        } catch (EvalException e) {
             //e.printStackTrace();
 
         } catch (Exception e) {
