@@ -3,9 +3,9 @@
  */
 interface CallByInterface {
 
-    public JamVal lookup(PureList<Binding> env, Variable v);
+    JamVal lookup(PureList<Binding> env, Variable v);
 
-    public Binding binding(Variable variable, AST ast, InterpreterHelper eval);
+    Binding binding(Variable variable, AST ast, InterpreterHelper eval);
 
 }
 

@@ -1,5 +1,6 @@
-Sean Burton(srb6)
-Xiao Zheng(xz24)
+srb6
+xz24
+
 
 Applying Slip Day: 2 Days
 
@@ -8,7 +9,9 @@ README for Comp 411, Project 02.
 1. Outlines of the organization of my program:
    We wrote three functions callByValue(), callByName(), and callByNeed() in our interpreter functions. callByValue()
 function is suppose to pass in all the parameters by the value any directly evaluated them. callByName function is suppose
-to pass in all the parameters by its reference and calculate the results.
+to pass in all the parameters by its reference and calculate the results. We put the main functioning template in the
+interpreterHelper template and wrote three classes CallByName, CallByValue, and CallByNeed in order to successfully use
+the Helper method in our main function. and the the CallByInterface is their common interface.
 
 
 
