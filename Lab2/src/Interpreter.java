@@ -145,7 +145,7 @@ public class Interpreter {
 							
 						});
 						if (ff.equals(JamEmpty.ONLY)){
-							return true;
+							return BoolConstant.TRUE;
 						}
 						return null;
 					}
@@ -252,6 +252,7 @@ public class Interpreter {
 				System.out.println("arg2: " + ((IntConstant) arg2Val).value());
 				System.out.println("op: " + op.name);
 				switch (op.name) {
+				// Integer Operators
 					case "+":
 					case "-":
 					case "*":
@@ -294,12 +295,14 @@ public class Interpreter {
 								throw new EvalException("binop " + op.toString() + " was given list " + jl.toString());
 							}
 						});
+					// Boolean & Integer Operators
 					case "=":
 					case "!=":
 					case "<":
 					case "<=":
 					case ">":
 					case ">=":
+					// Boolean Operators
 					case "&":
 					case "|":
 						return arg1Val.accept(new JamValVisitor<BoolConstant>() {
@@ -410,39 +413,82 @@ public class Interpreter {
 
 			@Override
     		public JamVal forApp(App a){
-				JamList list = JamEmpty.ONLY;	
-				nextAST = a.rator();
+				PureList<Binding> env = nextEnv;
+				JamList list = JamEmpty.ONLY;
+				AST[] listAST = a.args();
 				System.out.println("Rator: "+a.rator().toString());
-				JamVal fac = callByValue();
-				System.out.println("Fac: "+fac.toString());
-				JamValVisitor<Integer> pullOutInt = new JamValVisitor<Integer>(){
+				a.rator().accept(new ASTVisitor<JamVal>(){
 
 					@Override
-					public Integer forIntConstant(IntConstant ji) {
-						return ji.value();
+					public JamVal forBoolConstant(BoolConstant b) {
+						return null;
 					}
 
 					@Override
-					public Integer forBoolConstant(BoolConstant jb) {
-						throw new EvalException("Expected int in list: "+jb.toString());
+					public JamVal forIntConstant(IntConstant i) {
+						return null;
 					}
 
 					@Override
-					public Integer forJamList(JamList jl) {
-						throw new EvalException("Expected int in list: "+jl.toString());
+					public JamVal forNullConstant(NullConstant n) {
+						return null;
 					}
 
 					@Override
-					public Integer forJamFun(JamFun jf) {
-						throw new EvalException("Expected int in list: "+jf.toString());
+					public JamVal forJamEmpty(JamEmpty je) {
+						return null;
 					}
+
+					@Override
+					public JamVal forVariable(Variable v) {
+						return null;
+					}
+
+					@Override
+					public JamVal forPrimFun(PrimFun f) {
+						return null;
+					}
+
+					@Override
+					public JamVal forUnOpApp(UnOpApp u) {
+						return null;
+					}
+
+					@Override
+					public JamVal forBinOpApp(BinOpApp b) {
+						return null;
+					}
+
+					@Override
+					public JamVal forApp(App a) {
+						return null;
+					}
+
+					@Override
+					public JamVal forMap(Map m) {
+						Variable[] vars = m.vars();
+						for (int i = 1; i <= listAST.length; i++){
+							nextAST = listAST[listAST.length-i];
+							nextEnv = nextEnv.cons(new ValueBinding(vars[i],callByValue()));
+						}
+						return null;
+					}
+
+					@Override
+					public JamVal forIf(If i) {
+						return null;
+					}
+
+					@Override
+					public JamVal forLet(Let l) {
+						return null;
+					}
+
 					
-				};
-				int facVal = fac.accept(pullOutInt);
+				});
 				for (int i = 1; i <= a.args().length; i++){
 					nextAST = a.args()[a.args().length-i];
 					JamVal res = callByValue();
-					list.cons((JamVal)new IntConstant(facVal*res.accept(pullOutInt)));
 				}
 				return (JamVal) list;
 			}

@@ -372,10 +372,17 @@ public class InterpreterTest extends TestCase {
     @Test
     public void testIf() {
         try {
+<<<<<<< HEAD
             String output = "8";
 
             String input = "if 11 = 5 + 6 then 8 else 3 + 4";
             valueCheck("if", output, input);
+=======
+            String output = "7";
+
+            String input = "if 5 = 6 then 8 else 3 + 4";
+     		valueCheck("append", output, input);
+>>>>>>> c84f209f18206925040c4aadc18649cec06653c8
         } catch (Exception e) {
             //e.printStackTrace();
             fail("if threw " + e);
