@@ -159,16 +159,10 @@ class UnopVisitorImpl implements UnOpVisitor<JamVal>
 
     @Override
     public JamVal forOpTilde(OpNot op) {
-        return null;
+        BoolConstant boolVal = (BoolConstant) val.accept(new JamValVisitorImpl(BoolConstant.class));
+        if (boolVal == BoolConstant.TRUE) return BoolConstant.FALSE;
+        return BoolConstant.TRUE;
     }
-
-
-//    @Override
-//    public JamVal forOpTilde(OpTilde op) {
-//        BoolConstant boolVal = (BoolConstant) val.accept(new JamValVisitorImpl(BoolConstant.class));
-//        if (boolVal == BoolConstant.TRUE) return BoolConstant.FALSE;
-//        return BoolConstant.TRUE;
-//    }
 
 }
 

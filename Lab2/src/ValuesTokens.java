@@ -83,6 +83,8 @@ interface PureListVisitor<ElemType, ResType> {
   ResType forCons(Cons<ElemType> c);
 }
 
+
+
 /** An abstract class that factors out code common to classes Empty<T> and Cons<T> */
 abstract class PureListClass<ElemType> implements PureList<ElemType> {
   public PureList<ElemType> cons(ElemType o) { return new Cons<ElemType>(o,this); }

@@ -18,7 +18,7 @@ class CallByNameBinding extends Binding {
 
 
 
-class CallByNameProcessor implements CallByInterface {
+class CallByName implements CallByInterface {
 
     @Override
     public JamVal lookup(PureList<Binding> env, Variable v) {
