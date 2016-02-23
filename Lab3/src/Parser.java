@@ -5,12 +5,7 @@ import java.util.*;
 
 /** Class that represented parsing errors. */
 class ParseException extends RuntimeException {
-  /**
-	 * 
-	 */
-	private static final long serialVersionUID = -8577790438709411611L;
-
-ParseException(String s) { super(s); }
+  ParseException(String s) { super(s); }
 }
 
 /** Jam lexer class.              

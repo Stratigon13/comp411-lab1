@@ -30,6 +30,7 @@ class Interpreter {
   /** Constructor for a program embedded in a Reader. */
   Interpreter(Reader reader) { parser = new Parser(reader); }
   
+  /** Class representing a context used for context sensitive checking */
   class Context {
 	  HashSet<Variable> encounteredVars;
 	  HashSet<Variable> currentVars;
@@ -61,22 +62,24 @@ class Interpreter {
 	  }
   }
   
-  public Boolean contextCheck(AST prog, Context cIn) throws SyntaxException {
+  /** Traverses the AST tree for free variables or repeated variables in map or let */
+  public void contextCheck(AST prog, Context cIn) throws SyntaxException {
 	  Context context;
 	  if (cIn == null) {
 		  context = new Context();
 	  } else {
 		  context = cIn;
 	  }
-	  AST res;
+	  AST cur;
 	  List<AST> list = new ArrayList<AST>();
+	  list.add(prog);
 	  while(!list.isEmpty()) { 
-		  res = list.remove(0);
-		  if (res == NullConstant.ONLY) {
+		  cur = list.remove(0);
+		  if (cur == NullConstant.ONLY) {
 			  continue;
 		  }
-		  if (res != null) {
-			  list.addAll(Arrays.asList(res.accept(new ASTVisitor<AST[]>() {
+		  if (cur != null) {
+			  list.addAll(Arrays.asList(cur.accept(new ASTVisitor<AST[]>() {
 		
 				@Override
 				public AST[] forBoolConstant(BoolConstant b) {
@@ -107,7 +110,7 @@ class Interpreter {
 						visRes[0] = NullConstant.ONLY;
 						return visRes;
 					} else {
-						return null;
+						throw new SyntaxException(v + " is a free variable");
 					}
 				}
 		
@@ -141,8 +144,8 @@ class Interpreter {
 				@Override
 				public AST[] forMap(Map m) {
 					for (int i = 0; i < m.vars().length; i++){
-						if (!context.test(m.vars()[i])){
-							return null;
+						if (!context.add(m.vars()[i])){
+							throw new SyntaxException(m.vars()[i] + " is repeated in map");
 						}
 					}
 					context.flush();
@@ -166,20 +169,19 @@ class Interpreter {
 					AST[] visRes = new AST[l.defs().length + 1];
 					for (i = 0; i < l.defs().length; i++) {
 						if (!context.add(l.defs()[i].lhs())) {
-							return null;
+							throw new SyntaxException(l.defs()[i].lhs() + " is repeated in let");
 						}
 						visRes[i] = l.defs()[i].rhs();
 					}
+					context.flush();
 					visRes[i] = l.body();
 					return visRes;
 				}
 				  
 			  })));
-		  } else {
-			  return false;
 		  }
 	  }
-	  return true;
+	  return;
   }
   
   /* Top-level Value Cons Eval */
@@ -557,6 +559,42 @@ class Interpreter {
       return new StandardFunVisitor(args, ev, StandardPrimFunFactory.ONLY);
     }
   }
+  
+  /** Substitution method for callByValue let-rec*/
+  public static JamVal letRecEvalValue(Variable[] vars, AST[] exps, AST body, EvalVisitor evalVisitor) {
+      /* let semantics */
+      
+      int n = vars.length;
+      EvalVisitor newEvalVisitor = evalVisitor;
+   
+      // construct newEnv for Let body; vars are bound to values of corresponding exps using evalVisitor
+      PureList<Binding> newEnv = evalVisitor.env();
+      for (int i = n-1; i >= 0; i--) newEnv = newEnv.cons(evalVisitor.newBinding(vars[i], null));
+      for (int i = 0; i < n; i++){
+    	  newEnv = newEnv.cons(new ValueBinding(vars[i], letRecEvalValue(vars, exps, body, evalVisitor)));
+      }
+      newEvalVisitor = evalVisitor.newVisitor(newEnv);
+        
+      
+      return body.accept(newEvalVisitor);
+    }
+  
+  /** Substitution method for callByName and CallByNeed let-rec*/
+  public static JamVal letRecEvalName(Variable[] vars, AST[] exps, AST body, EvalVisitor evalVisitor) {
+      /* let semantics */
+      
+      int n = vars.length;
+      EvalVisitor newEvalVisitor = evalVisitor;
+   
+      // construct newEnv for Let body; vars are bound to values of corresponding exps using evalVisitor
+      PureList<Binding> newEnv = evalVisitor.env();
+      for (int i = n-1; i >= 0; i--) newEnv = newEnv.cons(evalVisitor.newBinding(vars[i], exps[i]));
+      //letRecEvalName(vars,exps,body,evalVisitor);
+      newEvalVisitor = evalVisitor.newVisitor(newEnv);
+        
+      
+      return body.accept(newEvalVisitor);
+    }
      
   /* Value Cons Constructor Policies */
   
@@ -566,6 +604,10 @@ class Interpreter {
     private CallByValueValue() { }
     
     /** Inherited letEval works because newBinding method is customized! */
+    
+    /*public JamVal letEval(Variable[] vars, AST[] exps, AST body, EvalVisitor evalVisitor){
+    	return letRecEvalValue(vars,exps,body,evalVisitor);
+    }*
     
     /** Constructs binding of var to value of arg in ev */
     public Binding newBinding(Variable var, AST arg, EvalVisitor ev) { return new ValueBinding(var, arg.accept(ev)); }
@@ -873,14 +915,17 @@ class Interpreter {
     }
   }
   
+  /** Interface for evaluating the Cons function */
   interface ConsEvalPolicy {
 	  JamCons newCons(AST f, AST r, EvalVisitor ev);
   }
   
+  /** Ultimately unnecessary intermediate abstract class */
   abstract static class ConsEvalPolicyCommon implements ConsEvalPolicy {
 	  public JamCons newCons(AST f, AST r) {return null;}
   }
   
+  /** Evaluation policy of Cons according to callByValue */
   static class ConsEvalPolicyByValue extends ConsEvalPolicyCommon {
 	  public static final ConsEvalPolicyByValue ONLY = new ConsEvalPolicyByValue();
 	  public ConsEvalPolicyByValue() {}
@@ -896,6 +941,7 @@ class Interpreter {
 	  }
   }
   
+  /** Evaluation policy of Cons according to callByName */
   static class ConsEvalPolicyByName extends ConsEvalPolicyCommon {
 	  public static final ConsEvalPolicyByName ONLY = new ConsEvalPolicyByName();
 	  private ConsEvalPolicyByName() {}
@@ -904,7 +950,8 @@ class Interpreter {
 		  return new JamLazyNameCons(f, r, ev);
 	  }
   }
-  
+
+  /** Evaluation policy of Cons according to callByNeed */
   static class ConsEvalPolicyByNeed extends ConsEvalPolicyCommon {
 	  public static final ConsEvalPolicyByNeed ONLY = new ConsEvalPolicyByNeed();
 	  private ConsEvalPolicyByNeed() {}
@@ -914,6 +961,7 @@ class Interpreter {
 	  }
   }
   
+  /** Extension of  JamCons class evaluated lazily by name */
   static class JamLazyNameCons extends JamCons {
 	  Suspension fSus;
 	  Suspension rSus;
@@ -964,6 +1012,7 @@ class Interpreter {
 	  }
   }
   
+  /** Extension of  JamCons class evaluated lazily by need */
   static class JamLazyNeedCons extends JamCons {
 	  Suspension fSus;
 	  Suspension rSus;
@@ -1078,7 +1127,7 @@ class Interpreter {
   }
 }
 
-
+/** Exception thrown during evaluation at runtime */
 class EvalException extends RuntimeException {
     /**
 	 * 
@@ -1088,6 +1137,7 @@ class EvalException extends RuntimeException {
 	EvalException(String msg) { super(msg); }
 }
 
+/** Exception thrown during context sensitive pass */
 class SyntaxException extends RuntimeException {
     /**
 	 * 
